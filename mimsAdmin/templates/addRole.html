@@ -1,0 +1,63 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD ROLE</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'role' %}">Role</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>Add Role</strong>
+        <a target="_blank" href="{% url 'role' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">ADD ROLE</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'roleAddition' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Role </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="roleName" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Role Status </label>
+                        <span style="color:red"> *</span>
+                        <select name="roleStatus" id="department" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            <option value="active">Activate</option>
+                            <option value="inactive">Inactivate</option>
+                            
+                        </select>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                        <a href="{% url 'role' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Role</button>
+                    </div>
+               
+                </div>
+  
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

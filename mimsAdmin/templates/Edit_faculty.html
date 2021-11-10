@@ -1,0 +1,329 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .invisible {
+        display: none;
+    }
+
+    .visible {
+        display: block;
+    }
+</style>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD FACULTY</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'faculty' %}">Faculty</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'addfaculty' %}"></a> -->
+        <strong>Edit Faculty</strong>
+        <a target="_blank" href="{% url 'faculty' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">CUSTOM FACULTY</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'updateFaculty' Faculty.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Name</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail" value="{{Faculty.FacultyName}}"
+                                 name="FacultyName">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Department</label>
+                            <span style="color:red"> *</span>
+                            <select name="FacultyDepartment" id="department" class="form-control" >
+                                <option value="">--SELECT--</option>
+                                {% for departments in dep %}
+                                <option {% if departments == Faculty.FacultyDepartment %} selected="selected" {% endif %} value="{{departments.id}}"> {{ departments }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Designation</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="Designation" value="{{Faculty.Designation}}">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Date Of Birth</label>
+                            <span style="color:red"> *</span>
+                            <input type="date" class="form-control form-control" id="exampleInputEmail" name="DateOfBirth" value="{{Faculty.DateOfBirth|date:'Y-m-d'}}">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Pan Number</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail" value="{{Faculty.PanNumber}}"
+                             name="PanNumber">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Photo(pdf,png,jpg)</label>
+                            <span style="color:red"> *</span>
+                            <input type="file" name="Photo" id="yourElem" class="form-control" onChange="validate(this.value)" value="{{Faculty.Photo}}">
+                        </div>
+                    </div>
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Eligibility As Per NBE Norms</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="FacultyEligibility">{{Faculty.FacultyEligibility}}</textarea>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Present Residential Address</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="PresentResidentialAddress">{{Faculty.PresentResidential}}</textarea>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Permenent Residential Address</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="PermenentResidentialAddress">{{Faculty.PermenentResidential}}</textarea>
+                        </div>
+                        <div class="col-sm-12 p-3">
+                            <label for="fac_name">Post PG Experience (In Years)</label>
+                            <span style="color:red"> *</span>
+                            <input type="number" class="form-control form-control" id="exampleInputEmail" value="{{ Faculty.PostPGExperience }}"
+                                aria-describedby="emailHelp" name="PGExperience" >
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Photo Id Proof Issued By Government Authorities
+                    Pancard/Aadhar Card/Passport Etc</h6>
+                <br>
+                <div class="form-group row">
+                    <div class="col-sm-4">
+                        <label for="fac_name">Photo(pdf,png,jpg)</label>
+                        <span style="color:red"> *</span>
+                        <input type="file" name="Photo1" id="yourElem" class="form-control" onChange="validate(this.value)">
+                    </div>
+                    <div class="col-sm-4 ">
+                        <label for="fac_name">Photo Id Number </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="PhotoId" id="yourElem"  class="form-control" value="{{Faculty.IdNumber}}">
+                    </div>
+                    <div class="col-sm-4 ">
+                        <label for="fac_name">Issuing Authority</label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="IssuingAuthority" id="yourElem"  class="form-control" value="{{ Faculty.IssuingAuthority }}">
+                    </div>
+                </div>
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Contact Particular</h6>
+                <br>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label for="fac_name">Telephone (office)(with STD) </label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="Telephone" id="yourElem" class="form-control" value="{{Faculty.Tele}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Mobile Number </label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="MobileNumber" id="yourElem" class="form-control" value="{{Faculty.Mobile}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Mobile Number (Alternate)</label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="MobileNumberAlt" id="yourElem" class="form-control" value="{{Faculty.MobileAlt}}">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Email Id</label>
+                        <span style="color:red"> *</span>
+                        <input type="email" name="EmailId" id="yourElem" class="form-control" value="{{Faculty.Email}}">
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'faculty' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Professional Qualification</h6>
+            <a href="{% url 'addQalification' Faculty.id %}" class="btn btn-primary" style="margin-left: 90%;">Add</a>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Specialization</th>
+                            <th>Year Of Passing</th>
+                            <th>College</th>
+                            <th>Reg: No</th>
+                            <th>Medical Council</th>
+                            <th>Reg: Valid Upto</th>
+                            <th>Document</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for i in Qualification %}
+                    <tbody>
+                        <tr>
+                            <td>{{i.CourseName}}</td>
+                            <td>{{i.SpecializationArea}}</td>
+                            <td>{{i.YearOfPassing}}</td>
+                            <td>{{i.NameOfCollege}}</td>
+                            <td>{{i.QualificationRegNo}}</td>
+                            <td>{{i.MedicalCouncilName}}</td>
+                            <td>{{i.RegistrationValidUpto}}</td>
+                            <td>{{i.Document}}</td>
+                            <td><a href="{% url 'deleteQua' i.id %}"><i class="fas fa-times"></i></a></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="card-body">
+            
+        </div>
+
+        
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Experience</h6>
+            <a href="{% url 'addExperience' Faculty.id %}" class="btn btn-primary" style="margin-left: 90%;">Add</a>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>PERIOD OF EMPLOYMENT</th>
+                            <th>FROM</th>
+                            <th>TO</th>
+                            <th>DESIGNATION</th>
+                            <th>HOSPITAL NAME</th>
+                            <th>DEPARTMENT</th>
+                            <th>EMPLOYMENT STATUS</th>
+                            <th>HOURS SPENT/DAY</th>
+                            <th>ASSOCIATE WITH DNB/FNB</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for i in Experience %}
+                    <tbody>
+                        <tr>
+                            <td>{{ i.PeriodOfEmployment }}</td>
+                            <td>{{ i.From_PeriodOfEmployment }}</td>
+                            <td>{{ i.To_PeriodOfEmployment }}</td>
+                            <td>{{ i.DesignationHeld }}</td>
+                            <td>{{ i.HospitalInstitutionCityState }}</td>
+                            <td>{{ i.Department }}</td>
+                            <td>{{ i.EmploymentStatus }}</td>
+                            <td>{{ i.HoursSpentPerDay }}</td>
+                            <td>{{ i.WhetherAssociatedDNB_FND }}</td>
+                            <td><a href="{% url 'deleteExp' i.id %}"><i class="fas fa-times"></i></a></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>  
+    </div>
+</div>
+
+<style>
+    .invisible {
+        display: none;
+    }
+</style>
+
+
+<script>
+
+
+    function validate(file) {
+        var ext = file.split(".");
+        ext = ext[ext.length - 1].toLowerCase();
+        var arrayExtensions = ["jpg", "jpeg", "png", "pdf"];
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+            alert("Wrong extension type.");
+            $("#image").val("");
+        }
+    }
+
+    function validate_p(file) {
+        var ext = file.split(".");
+        ext = ext[ext.length - 1].toLowerCase();
+        var arrayExtensions = ["pdf", "png", "jpg", "doc", "docx"];
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+            alert("Wrong extension type.");
+            $("#image").val("");
+        }
+    }
+
+    $("#datepicker").datepicker({
+        format: "yyyy",
+        viewMode: "years",
+        minViewMode: "years",
+        autoclose: true //to close picker once year is selected
+    });
+
+    // function invisible(){
+    //     var x = document.getElementById('E1')
+    //     x.className += 'invisible'
+    // }
+
+    // function visible(){
+    //     var x = document.getElementById('E1')
+    //     x.className += 'invisible'
+    // }
+
+    function add() {
+
+        var _div = document.createElement('div');
+        _div.innerHTML = '<div class="loader"> <div class="loader-ring"> <div class="loader-ring-light">hii</div> </div> </div>';
+        //append _div to button
+        document.getElementById("test01").appendChild(_div);
+
+    }
+
+
+
+
+
+
+</script>
+{% endblock content %}

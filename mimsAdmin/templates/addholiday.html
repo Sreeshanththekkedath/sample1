@@ -1,0 +1,48 @@
+{% extends 'Main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD HOLIDAY</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'holiday' %}">Holiday</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'addholiday' %}">Add Holiday</a>
+        <strong></strong>
+        <a target="_blank" href="{% url 'holiday' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">CUSTOM HOLIDAY</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'holiAddition' %}" method="post">{% csrf_token %}
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-user"
+                        id="exampleInputEmail" aria-describedby="emailHelp"
+                        placeholder="Enter Holiday Name..." name="holiday_name">
+                </div>
+                <div class="form-group">
+                    <input type="date" class="form-control form-control-user"
+                        id="exampleInputPassword" placeholder="Password" name="holiday_date">
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'holiday' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add Holiday</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

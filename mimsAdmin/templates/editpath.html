@@ -1,0 +1,80 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">EDIT PATH</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'path' %}">Path</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>Edit Path</strong>
+        <a target="_blank" href="{% url 'path' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">EDIT PATH</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'PathEdit' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <input type="hidden" value="{{pathDetails.id}}" name="Pathid">
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Name </label>
+                        <input type="text" name="pathName" id="yourElem" class="form-control" required value="{{ pathDetails.ParentPath }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Parent</label>
+                        <select name="parent" id="department" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            <option value="none" selected>None</option>
+                            {% for i in parentpath %}
+                            <option value="{{i.id}}">{{i.ParentPath}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Path </label>
+                        <input type="text" name="Path" id="yourElem" class="form-control" >
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Status </label>
+                        <select name="status" id="department" class="form-control" >
+                            <option value="show" selected>Show menu</option>
+                            <option value="hide">Hide menu</option>
+                            <option value="inactive">Inactive</option>                           
+                        </select>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Sort Order</label>
+                        <input type="number" name="SortOrder" id="yourElem" class="form-control" value="{{ pathDetails.id }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{% url 'role' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Path</button>
+                    </div>
+               
+                </div>
+  
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

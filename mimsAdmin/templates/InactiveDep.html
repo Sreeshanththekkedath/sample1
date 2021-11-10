@@ -1,0 +1,30 @@
+{% extends 'Main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Confirmation!</h6>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'inactive_dep' %}" method="post">
+                {% csrf_token %}
+                
+                <h6 class="m-0 font-weight-bold text-primary">Confirm To Inactivate 
+                    <br>
+                    <br>
+                    <strong>{{status.Department_name}}</strong>
+                </h6>       
+                <input type="hidden" value="inactive">
+                <input type="hidden" value="{{status.id}}" name="i_id">
+                <hr>
+                <a href="{% url 'Department' %}" class="btn btn-outline-primary">Cancel</a>
+                <input type="submit" name="confirm" class="btn btn-primary" value="Inactivate">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}

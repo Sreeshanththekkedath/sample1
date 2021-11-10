@@ -1,0 +1,132 @@
+{% extends 'Main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">SET PERMISSIONS</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'role' %}">Role</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>Set Permissions</strong>
+        <a href="{% url 'role' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{InRole.roleName}}</h6>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'savePermission' %}" method="POST">{% csrf_token %}
+                <input type="hidden" name="RoleId" value="{{InRole.id}}">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <td>NAME</td>
+                            <td>Permission
+                                <input type="checkbox" id="checkAll" onchange="clickall(this)">
+                            </td>
+                        </thead>
+                        <tbody>
+                            {% for i in parentpath %}
+                            <tr>
+                                <input type="hidden" value="{{i.id}}" id="PC">
+                                <th>
+                                    <p>{{i.ParentPath}}</p>
+                                </th>
+                                <th><input type="checkbox" id="cb{{i.id}}" onchange="clickChild(this)"{%if i.id in Parentcheck%}checked{%endif%}></th>
+                            </tr>
+                            {% for j in path %}
+                            {% if j.parent|lower == i.ParentPath|lower %}
+                            <tr>
+                                <td style="padding-left: 2rem;">
+                                    <p>{{j.pathName}}</p>
+                                </td>
+                                <td><input class="cb{{i.id}}" type="checkbox" name="permissions[]"
+                                        onchange="checkParent(this)" value="{{j.id}}" {%if j.id in Checked%} checked
+                                        {%endif%}>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <div class="col-sm-12">
+                    <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var checkBox = document.querySelectorAll("input[type='checkbox']");
+    function clickall(a) {
+        if (a.checked == true) {
+            checkBox.forEach((checkbox) => {
+                checkbox.checked = true;
+
+            })
+        }
+        else {
+            checkBox.forEach((checkbox) => {
+                checkbox.checked = false;
+            })
+        }
+    }
+
+</script>
+<script>
+    // console.log(PC)
+    var checkBox = document.querySelectorAll("input[type='checkbox']");
+    // console.log(checkBox)
+    function clickChild(a) {
+        // console.log(a.id)
+        if (a.checked == true) {
+            checkBox.forEach((checkbox) => {
+                if (a.id === checkbox.className) {
+                    checkbox.checked = true;
+                }
+            })
+        }
+        else {
+            checkBox.forEach((checkbox) => {
+                if (a.id === checkbox.className) {
+                    checkbox.checked = false;
+                }
+            })
+        }
+    }
+</script>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+
+    function checkParent(self){
+        var cls = self.className;
+        var classes = "." + cls;
+        var check = classes + ":checked";
+        var ids = "#" + cls;
+
+        var numberOfChildCheckBoxes = $(classes).length;
+
+        $(classes).change(function () {
+            var checkedChildCheckBox = $(check).length;
+            if (checkedChildCheckBox == numberOfChildCheckBoxes)
+                $(ids).prop('checked', true);
+            else
+                $(ids).prop('checked', false);
+        });
+        
+    }
+
+</script>
+
+{% endblock content %}

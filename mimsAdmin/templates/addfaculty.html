@@ -1,0 +1,549 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .invisible {
+        display: none;
+    }
+
+    .visible {
+        display: block;
+    }
+</style>
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD FACULTY</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'faculty' %}">Faculty</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'addfaculty' %}"></a> -->
+        <strong>Add Faculty</strong>
+        <a target="_blank" href="{% url 'faculty' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">CUSTOM FACULTY</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'additionFaculty' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Name</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                 name="FacultyName">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Department</label>
+                            <span style="color:red"> *</span>
+                            <select name="FacultyDepartment" id="department" class="form-control" required>
+                                <option value="">--SELECT--</option>
+                                {% for departments in dep %}
+                                <option value="{{departments.id}}"> {{ departments }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Designation</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="Designation">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Date Of Birth</label>
+                            <span style="color:red"> *</span>
+                            <input type="date" class="form-control form-control" id="exampleInputEmail" name="DateOfBirth">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Pan Number</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                             name="PanNumber">
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Photo(pdf,png,jpg)</label>
+                            <span style="color:red"> *</span>
+                            <input type="file" name="Photo" id="yourElem" class="form-control" onChange="validate(this.value)">
+                        </div>
+                    </div>
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name">Faculty Eligibility As Per NBE Norms</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="FacultyEligibility"></textarea>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Present Residential Address</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="PresentResidentialAddress"></textarea>
+                        </div>
+                        <br>
+                        <div class="col-sm-12">
+                            <label for="fac_name">Permenent Residential Address</label>
+                            <span style="color:red"> *</span>
+                            <textarea class="form-control form-control" name="PermenentResidentialAddress"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Photo Id Proof Issued By Government Authorities
+                    Pancard/Aadhar Card/Passport Etc</h6>
+                <br>
+                <div class="form-group row">
+                    <div class="col-sm-4">
+                        <label for="fac_name">Photo(pdf,png,jpg)</label>
+                        <span style="color:red"> *</span>
+                        <input type="file" name="Photo1" id="yourElem" class="form-control" onChange="validate(this.value)">
+                    </div>
+                    <div class="col-sm-4 ">
+                        <label for="fac_name">Photo Id Number </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="PhotoId" id="yourElem"  class="form-control">
+                    </div>
+                    <div class="col-sm-4 ">
+                        <label for="fac_name">Issuing Authority</label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="IssuingAuthority" id="yourElem"  class="form-control">
+                    </div>
+                </div>
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Contact Particular</h6>
+                <br>
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <label for="fac_name">Telephone (office)(with STD) </label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="Telephone" id="yourElem" class="form-control">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Mobile Number </label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="MobileNumber" id="yourElem" class="form-control">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Mobile Number (Alternate)</label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="MobileNumberAlt" id="yourElem" class="form-control">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="fac_name">Email Id</label>
+                        <span style="color:red"> *</span>
+                        <input type="email" name="EmailId" id="yourElem" class="form-control">
+                    </div>
+                </div>
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Professional Qualification</h6>
+                <br>
+                <div class="varient">
+                    <div class="form-group row">
+                        <div class="col-sm-3 p-3">
+                            <input type="hidden" value="1" name="count[]">
+                            <label for="fac_name">Course Name </label>
+                            <span style="color:red"> *</span>
+                            <select name="CourseName[]" id="department" class="form-control" >
+                                <option value="">--SELECT--</option>
+                                {% for Course in course %}
+                                <option value="{{ Course }}"> {{ Course }} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Specialization Area </label>
+                            <span style="color:red"> *</span>
+                            <input type="text" name="SpecializationArea[]" id="yourElem" class="form-control"
+                                >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Year Of Passing </label>
+                            <span style="color:red"> *</span>
+                            <input type="number" value="2021" name="YearOfPassing[]" id="yourElem" class="form-control"
+                             min="2000" max="2021">
+
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Name Of College</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" name="NameOfCollege[]" id="yourElem" class="form-control">
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Qualification Reg No</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" name="QualificationRegNo[]" id="yourElem" class="form-control"
+                                >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Medical Council Name</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" name="MedicalCouncilName[]" id="yourElem" class="form-control"
+                               >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Registration Valid Upto</label>
+                            <span style="color:red"> *</span>
+                            <input type="date" name="RegistrationValidUpto[]" id="yourElem" class="form-control"
+                                >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Document(pdf,png,jpg,doc,docx)</label>
+                            <span style="color:red"> *</span>
+                            <input type="file" name="Document[]" id="yourElem" class="form-control" 
+                                onChange="validate_p(this.value)">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-sm-12 text-center">
+                    <div id="add-file"></div>
+                    <button class="btn btn-link plus-varient-set-type-btn" type="button"
+                        style="margin: 0 auto;padding-top: 8%;"><i class="fas fa-plus-square"></i></button>
+                    <button class="btn btn-link minus-varient-btn invisible" type="button"
+                        style="margin: 0 auto;padding-top: 8%;"><i class="fa fa-minus"></i></button>
+                </div>
+
+
+                <!-- Experience -->
+
+                <hr>
+                <h6 class="m-0 font-weight-bold text-primary">Experience After PG Degree Qualification</h6>
+                <br>
+                <div class="varient1">
+                    <div class="form-group row">
+                        <div class="col-sm-12 p-3">
+                            <label for="fac_name">Post PG Experience (In Years)</label>
+                            <span style="color:red"> *</span>
+                            <input type="number" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="PGExperience" >
+                        </div>
+                        <br>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Period Of Employment</label>
+                            <span style="color:red"> *</span>
+                            <select name="PeriodOfEmployment[]" id="department" class="form-control" >
+                                <option value="">--SELECT--</option>
+                                <option value="Present"> Present</option>
+                                <option value="Past"> Past</option>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">From (Period Of Employment)</label>
+                            <span style="color:red"> *</span>
+                            <input type="date" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="From[]" >
+                        </div>
+                        <br>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">To (Period Of Employment)</label>
+                            <span style="color:red"> *</span>
+                            <input type="date" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="To[]" >
+                        </div>
+                        <br>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Designation Held </label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="Designation[]" >
+                        </div>
+                        <br>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Hospital/Institution City & State</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="Hospital[]" >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Department</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="Department[]" >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Employment Status</label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="EmploymentStatus[]" >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Hours Spent Per Day(Approx)</label>
+                            <span style="color:red"> *</span>
+                            <input type="number" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="HoursSpent[]" >
+                        </div>
+                        <div class="col-sm-3 p-3">
+                            <label for="fac_name">Whether associated with DNB/FND </label>
+                            <span style="color:red"> *</span>
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"
+                                aria-describedby="emailHelp" name="associated[]" >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12 text-center">
+                        <div id="add-file"></div>
+                        <button class="btn btn-link plus-varient-set-type-btn1" type="button"
+                            style="margin: 0 auto;padding-top: 8%;"><i class="fas fa-plus-square"></i></button>
+                        <button class="btn btn-link minus-varient-btn invisible" type="button"
+                            style="margin: 0 auto;padding-top: 8%;"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+
+
+
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'faculty' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Faculty</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .invisible {
+        display: none;
+    }
+</style>
+
+
+<script>
+
+
+    function validate(file) {
+        var ext = file.split(".");
+        ext = ext[ext.length - 1].toLowerCase();
+        var arrayExtensions = ["jpg", "jpeg", "png", "pdf"];
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+            alert("Wrong extension type.");
+            $("#image").val("");
+        }
+    }
+
+    function validate_p(file) {
+        var ext = file.split(".");
+        ext = ext[ext.length - 1].toLowerCase();
+        var arrayExtensions = ["pdf", "png", "jpg", "doc", "docx"];
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+            alert("Wrong extension type.");
+            $("#image").val("");
+        }
+    }
+
+    $("#datepicker").datepicker({
+        format: "yyyy",
+        viewMode: "years",
+        minViewMode: "years",
+        autoclose: true //to close picker once year is selected
+    });
+
+    // function invisible(){
+    //     var x = document.getElementById('E1')
+    //     x.className += 'invisible'
+    // }
+
+    // function visible(){
+    //     var x = document.getElementById('E1')
+    //     x.className += 'invisible'
+    // }
+
+    function add() {
+
+        var _div = document.createElement('div');
+        _div.innerHTML = '<div class="loader"> <div class="loader-ring"> <div class="loader-ring-light">hii</div> </div> </div>';
+        //append _div to button
+        document.getElementById("test01").appendChild(_div);
+
+    }
+
+
+
+
+
+
+</script>
+<script src="http://139.59.91.27/dev2/dnb/assets/js/jquery.min.js" type="text/javascript"></script>
+<script>
+
+    $(document).on('click', '.plus-varient-set-type-btn', function () {
+        var htm1 = $('#varient-element').html();
+        var htm = ' <div id="varient-element">\
+                    <div class="form-group row">\
+                        <div class="col-sm-12 text-center">\
+                            <div id="add-file"></div>\
+                            <button class="btn btn-link minus-varient-btn" type="button"\
+                                style="margin: 0 auto;padding-top: 8%;"><i class="fa fa-minus"></i></button>\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <input type="hidden" value="1" name="count[]">\
+                            <label for="fac_name">CourseName </label>\
+            <span style = "color:red"> *</span>\
+                <select name="CourseName[]" id="department" class="form-control">\
+                    <option value="">--SELECT--</option>\
+                    {% for Course in course %}\
+                    <option value="{{ Course }}"> {{ Course }} </option>\
+                    {% endfor %}\
+                </select>\
+                        </div >\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Specialization Area </label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" name="SpecializationArea[]" id="yourElem" class="form-control">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Year Of Passing </label>\
+                            <span style="color:red"> *</span>\
+                            <input type="number" value="2021" name="YearOfPassing[]" id="yourElem" class="form-control"\
+                                 min="2000" max="2021">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Name Of College</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" name="NameOfCollege[]" id="yourElem" class="form-control">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Qualification Reg No</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" name="QualificationRegNo[]" id="yourElem" class="form-control">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Medical Council Name</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" name="MedicalCouncilName[]" id="yourElem" class="form-control">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Registration Valid Upto</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="date" name="RegistrationValidUpto[]" id="yourElem" class="form-control">\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Document(pdf,png,jpg,doc,docx)</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="file" name="Document[]" id="yourElem" class="form-control" onChange="validate_p(this.value)">\
+                        </div>\
+                    </div >\
+                </div > '
+        console.log(htm)
+        var btn = '<button class="btn btn-link plus-varient-set-type-btn" type="button" style="margin: 0 auto;padding-top: 8%;"><i class="fas fa-plus-square"></i></button>';
+        $(this).after(btn);
+        $(this).remove();
+        $('.varient:first').after(htm);
+    })
+
+    $(document).on('click', '.minus-varient-btn', function () {
+        $(this).parent().parent().remove();
+    })
+
+
+</script>
+<script>
+    $(document).on('click', '.plus-varient-set-type-btn1', function () {
+        var htm1 = $('#varient-element1').html();
+        
+        var htm = '                <div id="varient-element1">\
+                    <div class="form-group row" id="E">\
+                        <div class="col-sm-12 text-center">\
+                            <div id="add-file"></div>\
+                            <button class="btn btn-link minus-varient-btn1" type="button"\
+                                style="margin: 0 auto;padding-top: 8%;"><i class="fa fa-minus"></i></button>\
+                        </div>\
+                        <br>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Period Of Employment</label>\
+                            <span style="color:red"> *</span>\
+                            <select name="PeriodOfEmployment[]" id="department" class="form-control" required>\
+                                <option value="">--SELECT--</option>\
+                                <option value="Present"> Present</option>\
+                                <option value="Past"> Past</option>\
+                            </select>\
+                        </div>\
+                        <br>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">From (Period Of Employment)</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="date" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="From[]" required>\
+                        </div>\
+                        <br>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">To (Period Of Employment)</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="date" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="To[]" required>\
+                        </div>\
+                        <br>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Designation Held </label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="Designation[]" required>\
+                        </div>\
+                        <br>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Hospital/Institution City & State</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="Hospital[]" required>\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Department</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="Department[]" required>\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Employment Status</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="EmploymentStatus[]" required>\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Hours Spent Per Day(Approx)</label>\
+                            <span style="color:red"> *</span>\
+                            <input type="number" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="HoursSpent[]" required>\
+                        </div>\
+                        <div class="col-sm-3 p-3">\
+                            <label for="fac_name">Whether associated with DNB/FND </label>\
+                            <span style="color:red"> *</span>\
+                            <input type="text" class="form-control form-control" id="exampleInputEmail"\
+                                aria-describedby="emailHelp" name="associated[]" required>\
+                        </div>\
+                    </div>\
+                </div>'
+        console.log(htm)
+        var btn = '<button class="btn btn-link plus-varient-set-type-btn1" type="button" style="margin: 0 auto;padding-top: 8%;"><i class="fas fa-plus-square"></i></button>';
+        $(this).after(btn);
+        $(this).remove();
+        $('.varient1:first').after(htm);
+
+    })
+
+    $(document).on('click', '.minus-varient-btn1', function () {
+        $(this).parent().parent().remove();
+    })
+</script>
+{% endblock content %}

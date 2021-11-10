@@ -1,0 +1,81 @@
+{% extends 'Main.html' %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">PATH</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'path' %}">Path</a>
+        <strong>+</strong>
+        <a href="{% url 'addPath' %}">Add Path</a>
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Path</h6>           
+                <div class="col-sm-3" style="margin-left: 70%;">
+                    <a href="{% url 'addPath' %}" class="btn btn-primary btn-block" style="width: 100%;">
+                        Add Path
+                    </a>
+                </div>           
+        </div>
+        {% include 'messages.html' %}
+
+        <div class="card-body">
+            <!-- filter -->
+            
+             
+
+          
+            
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>ROLE</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <!-- <tfoot>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>HOLIDAY NAME</th>
+                            <th>HOLIDAY DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </tfoot> -->
+                    {% for i in path %}
+                    <tbody>
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ i.ParentPath }}</td>
+                            <td>
+                                <a href="{% url 'editPath' i.id %}" id="act" class="">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'deletePath' i.id %}" onclick="">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                   {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+
+
+
+
+{% endblock content %}

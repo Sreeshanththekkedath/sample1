@@ -1,0 +1,132 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">EDIT DEPARTMENT</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'Department' %}">Department</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Edit Department</a> -->
+        <strong>Edit Department</strong>
+        <a target="_blank" href="{% url 'UpdateDepartment' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">CUSTOM DEPARTMENT</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'UpdateDepartment' %}" method="post">{% csrf_token %}
+
+                <input type="hidden" value="{{depDetails.id}}" name="d_id">
+                <div class="form-group row">
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Department Name </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="DepartmentName" id="yourElem" class="form-control" required="" value="{{ depDetails.Department_name }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Department Head </label>
+                        <span style="color:red"> *</span>
+                        <select name="DepartmentHead" id="department" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            {% for head in departmentHead %}
+                            <option value="{{head.DepHead_name}}">{{head}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Course Duration (Years In Numbers) </label>
+                        <span style="color:red"> *</span>
+                        <input type="number" value="{{ depDetails.CourseDuration }}" name="CourseDuration" id="yourElem" class="form-control" required=""
+                            min="2000" max="2021">
+
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Programme Name </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="programName" id="yourElem" class="form-control" required value="{{ depDetails.programName }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Log Book</label>
+
+                        <select id="LogBook" name="logBook[]" multiple class="form-control" >
+                            {% for logb in logBook %}
+                            <option value="{{logb}}">{{logb}}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        
+
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Accreditation Renewal Date </label>
+                        <span style="color:red"> *</span>
+                        <input type="date" name="AccreditationRenewalDate" id="yourElem" class="form-control" value="{{ depDetails.AccreditationRenewalDate|date:'Y-m-d' }}">   
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">First Year Stipend</label>
+                        <span style="color:red"> *</span>
+                        <input type="number" name="FirstYearStipend" id="yourElem" class="form-control" value="{{ depDetails.FirstYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Second Year Stipend</label>
+                        <span style="color:red"> *</span>
+                        <input type="number" name="SecondYearStipend" id="yourElem" class="form-control" required value="{{ depDetails.SecondYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Third Year Stipend</label>
+                        <span style="color:red"> *</span>
+                        <input type="number" name="ThirdYearStipend" id="yourElem" class="form-control" required value="{{ depDetails.ThirdYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Fourth Year Stipend</label>
+                        <!-- <span style="color:red"> *</span> -->
+                        <input type="number" name="FourYearStipend" id="yourElem" class="form-control" value="{{ depDetails.FourYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Fifth Year Stipend</label>
+                        <!-- <span style="color:red"> *</span> -->
+                        <input type="number" name="FiveYearStipend" id="yourElem" class="form-control" value="{{ depDetails.FiveYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Sixth Year Stipend</label>
+                        <!-- <span style="color:red"> *</span> -->
+                        <input type="number" name="SixYearStipend" id="yourElem" class="form-control" value="{{ depDetails.SixYearStipend }}">
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Log Book</label>
+
+                        <select id="status" name="status" class="form-control">
+                            <option value="active">Activate</option>
+                            <option value="inactive">Inctivate</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'Department' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Department</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

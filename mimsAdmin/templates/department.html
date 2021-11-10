@@ -1,0 +1,115 @@
+{% extends 'Main.html' %}
+{% block content %}
+
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">DEPARTMENT</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'Department' %}">Department</a>
+        <strong>+</strong>
+        <a href="{% url 'add_department' %}">Add Department</a>
+    </p>
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">DEPARTMENT</h6>
+        </div>
+        {% include 'messages.html' %}
+        <div class="card-body">
+            <form class="user" action="{% url 'filterdepartment' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <!-- {{filter.form}} -->
+                        <input type="text" class="form-control form-control" id="name" placeholder="First Name"
+                            name="filterByName">
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="submit" id="form-submit" class="btn btn-primary"
+                            style="width: 100%;">Filter</button>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="reset" id="clr" class="btn btn-primary" style="width: 100%;"
+                            onclick="clearInput()">Clear</button>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+
+                    <div class="col-sm-12">
+                        <a href="{% url 'add_department' %}" class="btn btn-primary btn-block" style="width: 100%;">
+                            Add Department
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>DEPARTMENT NAME</th>
+                            <th>DEPARTMENT HEAD</th>
+                            <th>PROGRAMME NAME</th>
+                            <th>COURSE DURATION (YEAR)</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <!-- <tfoot>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>HOLIDAY NAME</th>
+                            <th>HOLIDAY DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </tfoot> -->
+
+                    <tbody>
+                        <tr>
+                            {% for i in dep_list %}
+
+
+                            <td>{{forloop.counter}}</td>
+                            <td>{{i.Department_name}}</td>
+                            <td>{{i.Department_Head}}</td>
+                            <td>{{i.programName}}</td>
+                            <td>{{i.CourseDuration}}</td>
+                            <td>
+                                <input type="hidden" name='hiddenstatus' value="{{i.dep_status}}" id="hiStatus">
+
+                                <a href="{% url 'view_dep' i.id %}" onclick="">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'edit_dep' i.id %}" onclick="">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <!-- active -->
+                                {% if i.dep_status != 'active' %}
+                                <a href="{% url 'depinverts' i.id %}">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% else %}
+                                <!-- inactive -->
+                                <a href="{% url 'depinverts' i.id %}">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+
+
+{% endblock content %}

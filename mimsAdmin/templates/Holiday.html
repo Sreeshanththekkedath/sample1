@@ -1,0 +1,104 @@
+{% extends 'Main.html' %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">HOLIDAY MASTER</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'holiday' %}">Holiday</a>
+        <strong>+</strong>
+        <a href="{% url 'addholiday' %}">Add Holiday</a>
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">HOLYDAY</h6>
+        </div>
+        {% include 'messages.html' %}
+        <div class="card-body">
+            <form class="user" action="{% url 'filterHoliday' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <input type="text" class="form-control form-control" id="name" placeholder="First Name"
+                            name="filterByName">
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="date" class="form-control form-control" id="date" placeholder="Last Name"
+                            name="filterByDate">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-3">
+                        <button type="submit" id="form-submit" class="btn btn-primary"
+                            style="width: 100%;">Filter</button>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="reset" id="clr" class="btn btn-primary" style="width: 100%;"
+                            onclick="clearInput()">Clear</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="{% url 'addholiday' %}" class="btn btn-primary btn-block" style="width: 100%;">
+                            Add Holiday
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>HOLIDAY NAME</th>
+                            <th>HOLIDAY DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <!-- <tfoot>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>HOLIDAY NAME</th>
+                            <th>HOLIDAY DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </tfoot> -->
+                    {% for i in holiday_list %}
+                    <tbody>
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{i.Holiday_name}}</td>
+                            <td>{{i.Holiday_date}}</td>
+                            <td>{{i.Holiday_status}}</td>
+                            <td>
+                                {% if i.Holiday_status != 'active' %}
+                                <a href="{% url 'inverts' i.id %}" onclick="" id="act" class="">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'inverts' i.id %}" onclick="" class="" id="inact">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+
+
+
+
+{% endblock content %}

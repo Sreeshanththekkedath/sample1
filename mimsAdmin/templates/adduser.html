@@ -1,0 +1,106 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD USER</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'user' %}">User</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>Add User</strong>
+        <a target="_blank" href="{% url 'user' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">ADD USER</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'userAddition' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Name </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="Name" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Phone </label>
+                        <span style="color:red"> *</span>
+                        <input type="tel" name="Phone" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Role</label>
+                        <span style="color:red"> *</span>
+                        <select name="role" id="department" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            {% for i in role %}
+                            <option value="{{i.id}}">{{i.roleName}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Email </label>
+                        <span style="color:red"> *</span>
+                        <input type="email" name="Email" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Username </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="Username" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Department</label>
+                        <span style="color:red"> *</span>
+                        <select name="department" id="department" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            {% for i in dep %}
+                            <option value="{{i.Department_name}}">{{i.Department_name}}</option>
+                            {% endfor %}
+                            
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Password </label>
+                        <span style="color:red"> *</span>
+                        <input type="password" name="password" id="yourElem" class="form-control" required>
+                    </div>
+
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Status</label>
+                        <span style="color:red"> *</span>
+                        <select name="Status" id="status" class="form-control" required>
+                            <option value="">--SELECT--</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>     
+                        </select>
+                    </div>
+                    <hr>
+                    <div class="col-sm-6">
+                        <a href="{% url 'user' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            User</button>
+                    </div>
+               
+                </div>
+  
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

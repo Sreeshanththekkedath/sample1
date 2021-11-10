@@ -1,0 +1,27 @@
+{% extends 'Main.html' %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Confirmation!</h6>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'deleteE' %}" method="post">
+                {% csrf_token %}
+                
+                <h6 class="m-0 font-weight-bold text-primary">Confirm To Delete Your Experience of
+                    <br>
+                    <br>
+                    <strong>{{data}}</strong>
+                </h6>       
+                <input type="hidden" value="{{data.id}}" name="d_id">
+                <hr>
+                <a href="{% url 'faculty' %}" class="btn btn-outline-primary">Cancel</a>
+                <input type="submit" name="confirm" class="btn btn-primary" value="Delete">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
