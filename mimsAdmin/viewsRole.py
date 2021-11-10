@@ -358,6 +358,7 @@ def UpdateUser(request):
         Email = request.POST['Email']
         roledata = Role.objects.get(id=role)
         PersonId = request.POST['PersonId']
+        
         if PersonId:
             Userdata = UserTable.objects.filter(id=PersonId)
             msg = '{} updated successfully'.format(UserTable.objects.get(id=PersonId).name)
