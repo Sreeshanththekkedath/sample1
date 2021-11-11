@@ -6,6 +6,30 @@ from django.http import HttpResponseRedirect,JsonResponse
 from .models import *
 from django.db.models import Q
 
+
+
+
+class hasPermission:
+    def __init__(self, request, Path):
+        self.Path = Path
+        self.request = request
+    
+    def PermissionStatus(self):
+        LoginId = self.request.session['loginid'] 
+        print(LoginId)
+        if UserTable.objects.get(id=LoginId).status == 'active':
+            RoleOfUser = UserTable.objects.get(id=LoginId).userRole
+            PermissionOfUser = Permissions.objects.all().filter(PermissionOfRole=RoleOfUser)
+            Parent = [str(x.ParentPath).lower() for x in ParentPath.objects.all()]
+            PathForPermission = [str(x.PathForPermission).lower() for x in PermissionOfUser]
+            if self.Path.lower() in PathForPermission:
+                return True
+            elif self.Path.lower() in Parent:
+                return True
+            else:
+                return False
+        else:
+            return False
 # Create your views here.
 
 def admin(request):

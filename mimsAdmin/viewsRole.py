@@ -8,29 +8,9 @@ from django.db.models import Q
 from .views import loginPerson
 from .forms import RoleForm
 from django.shortcuts import redirect
+from .views import hasPermission
 
 
-class hasPermission:
-    def __init__(self, request, Path):
-        self.Path = Path
-        self.request = request
-    
-    def PermissionStatus(self):
-        LoginId = self.request.session['loginid'] 
-        print(LoginId)
-        if UserTable.objects.get(id=LoginId).status == 'active':
-            RoleOfUser = UserTable.objects.get(id=LoginId).userRole
-            PermissionOfUser = Permissions.objects.all().filter(PermissionOfRole=RoleOfUser)
-            Parent = [str(x.ParentPath).lower() for x in ParentPath.objects.all()]
-            PathForPermission = [str(x.PathForPermission).lower() for x in PermissionOfUser]
-            if self.Path.lower() in PathForPermission:
-                return True
-            elif self.Path.lower() in Parent:
-                return True
-            else:
-                return False
-        else:
-            return False
 
 
 
@@ -39,6 +19,7 @@ def role(request):
     container['role'] = Role.objects.all()
     return render(request,'role.html',container)
 
+# add role
 def addRole(request):
     Permission = hasPermission(request,'add role').PermissionStatus()
     print(Permission)
@@ -46,24 +27,28 @@ def addRole(request):
         container = loginPerson(request)
         return render(request,'addRole.html',container)
     else:
-        messages.warning(request, "ÿou can't access")
+        messages.warning(request, "You are not allowed to access")
         return HttpResponseRedirect('role')
-
 def roleAddition(request):
     if request.method == 'POST':
         roleForm = RoleForm(request.POST)
         if roleForm.is_valid():
             roleForm.save()
     return HttpResponseRedirect('role')
-    
-def actInact(request,pk):
-    updateData = Role.objects.get(id=pk)
-    container = {'update':updateData}
-    if updateData.roleStatus == 'active':
-        return render(request,'inactiverole.html',container)
-    else:
-        return render(request,'activerole.html',container)
 
+#disable the role
+def actInact(request,pk):
+    Permission = hasPermission(request,'disable role').PermissionStatus()
+    if Permission:
+        updateData = Role.objects.get(id=pk)
+        container = {'update':updateData}
+        if updateData.roleStatus == 'active':
+            return render(request,'inactiverole.html',container)
+        else:
+            return render(request,'activerole.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('role')
 def roleinactive(request):
     if request.method == 'POST':
         UpdateId = request.POST['i_id']
@@ -72,8 +57,6 @@ def roleinactive(request):
         msg = '{} Inactivated'.format(data.roleName)
         messages.warning(request, msg)
         return HttpResponseRedirect('role')
-    
-
 def roleactive(request):
     if request.method == 'POST':
         UpdateId = request.POST['i_id']
@@ -83,13 +66,17 @@ def roleactive(request):
         messages.success(request, msg)
         return HttpResponseRedirect('role')
 
-
+#edit role
 def editRole(request,pk):
-    container = loginPerson(request)
-    roleData = Role.objects.get(id=pk)
-    container['role'] = roleData
-    return render(request,'editRole.html',container)
-
+    Permission = hasPermission(request,'edit role').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        roleData = Role.objects.get(id=pk)
+        container['role'] = roleData
+        return render(request,'editRole.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('role')
 def roleEdit(request):
     if request.method == 'POST':
         roleName = request.POST['roleName']
@@ -105,17 +92,23 @@ def roleEdit(request):
             messages.warning(request,'Something went wrong')
     return HttpResponseRedirect('role')
 
+#____path______
 def path(request):
     container = loginPerson(request)
     container['path'] = ParentPath.objects.all()
     return render(request,'path.html',container)
 
+# add path
 def addPath(request):
-    container = loginPerson(request)
-    container['parentpath'] = ParentPath.objects.all()
-    # container['countpath'] = Path.objects.all().count()
-    return render(request,'addpath.html',container)
-
+    Permission = hasPermission(request,'add path').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        container['parentpath'] = ParentPath.objects.all()
+        # container['countpath'] = Path.objects.all().count()
+        return render(request,'addpath.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('path')        
 def pathAddition(request):
     container = loginPerson(request)
     if request.method == 'POST':
@@ -147,12 +140,17 @@ def pathAddition(request):
                 return HttpResponseRedirect('path')
     return HttpResponseRedirect('path')
 
-def editPath(request,pk):               
-    container = loginPerson(request)
-    container['parentpath'] = ParentPath.objects.all()
-    container['pathDetails'] = ParentPath.objects.get(id=pk)
-    return render(request,'editpath.html',container)
-
+#edit path
+def editPath(request,pk):
+    Permission = hasPermission(request,'edit path').PermissionStatus()
+    if Permission:                   
+        container = loginPerson(request)
+        container['parentpath'] = ParentPath.objects.all()
+        container['pathDetails'] = ParentPath.objects.get(id=pk)
+        return render(request,'editpath.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('path')         
 def PathEdit(request):
     if request.method == 'POST':
         pathName = request.POST['pathName']
@@ -186,7 +184,7 @@ def PathEdit(request):
                     messages.success(request,'selected Prent Path is same as the path you are taken')
                     return HttpResponseRedirect('path')
 
-
+#__Permissions__
 def permisson(request,pk):
     container = loginPerson(request)
     parentpath = ParentPath.objects.all()
@@ -209,39 +207,48 @@ def permisson(request,pk):
     print(ParentChecked)
     return render(request,'permission.html',container)
 
-
+# set permission
 def savePermission(request):
     print('save Permissions')
-    if request.method == 'POST':
-        RoleId = request.POST['RoleId']
-        PermissionList = request.POST.getlist('permissions[]')
-        RoleData = Role.objects.get(id=RoleId)
-        print(PermissionList)
-        crossCheck = Permissions.objects.all().filter(PermissionOfRole=RoleData)
-        if crossCheck:
-            crossCheck.delete()
-            for i in PermissionList:
-                PathData = Path.objects.get(id=i)
-                Permissions(
-                    PermissionOfRole = RoleData,
-                    PathForPermission = PathData
-                ).save()
-            msg = 'Permission of {} updated'.format(RoleData.roleName)
-        else:
-            for i in PermissionList:
-                PathData = Path.objects.get(id=i)
-                Permissions(
-                    PermissionOfRole = RoleData,
-                    PathForPermission = PathData
-                ).save()  
-            msg = 'Permission of {} saved'.format(RoleData.roleName)    
-        messages.success(request,msg)
+    Permission = hasPermission(request,'set permission').PermissionStatus()
+    PersonId = request.POST['RoleId']
+    if Permission:
+        if request.method == 'POST':
+            RoleId = request.POST['RoleId']
+            PermissionList = request.POST.getlist('permissions[]')
+            RoleData = Role.objects.get(id=RoleId)
+            print(PermissionList)
+            crossCheck = Permissions.objects.all().filter(PermissionOfRole=RoleData)
+            if crossCheck:
+                crossCheck.delete()
+                for i in PermissionList:
+                    PathData = Path.objects.get(id=i)
+                    Permissions(
+                        PermissionOfRole = RoleData,
+                        PathForPermission = PathData
+                    ).save()
+                msg = 'Permission of {} updated'.format(RoleData.roleName)
+            else:
+                for i in PermissionList:
+                    PathData = Path.objects.get(id=i)
+                    Permissions(
+                        PermissionOfRole = RoleData,
+                        PathForPermission = PathData
+                    ).save()  
+                msg = 'Permission of {} saved'.format(RoleData.roleName)    
+            messages.success(request,msg)
+            return HttpResponseRedirect('role')
         return HttpResponseRedirect('role')
-      
+    else:
+        messages.warning(request, "Only Super User Can set Permissions")
+        return redirect('permisson',pk=PersonId)          
+
 
 def deletePath(request,pk):
     return HttpResponseRedirect('path')
 
+
+#___user___
 def user(request):
     container = loginPerson(request)
     container['role'] = Role.objects.all()
@@ -249,12 +256,17 @@ def user(request):
     container['user1'] = UserTable.objects.all()
     return render(request,'user.html',container)
 
+#add user
 def addUser(request):
-    container = loginPerson(request)
-    container['dep'] = department.objects.all()
-    container['role'] = Role.objects.all()
-    return render(request,'adduser.html',container)
-
+    Permission = hasPermission(request,'add user').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        container['dep'] = department.objects.all()
+        container['role'] = Role.objects.all()
+        return render(request,'adduser.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('user')          
 def userAddition(request):
     if request.method == 'POST':
         name = request.POST['Name']
@@ -278,7 +290,6 @@ def userAddition(request):
                 PSWD=password
             ).save()
     return HttpResponseRedirect('user')
-
 def userFilter(request):
     container = loginPerson(request)
     container['role'] = Role.objects.all()
@@ -305,42 +316,58 @@ def userFilter(request):
             container['user1'] = UserTable.objects.all()
     return render(request,'user.html',container)
 
+#view user
 def viewUser(request,pk):
-    container = loginPerson(request)
-    container['user'] = UserTable.objects.get(id=pk)
-    return render(request,'userView.html',container)
-
+    Permission = hasPermission(request,'view user').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        container['user'] = UserTable.objects.get(id=pk)
+        return render(request,'userView.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('user') 
+#set password or change password
 def ChangePSWD(request):
     print('change')
-    if request.method == 'POST':
-        OldPassword = request.POST['OldPSWD']
-        PersonId = request.POST['IdOfPerson']
-        if PersonId:
-            print('person id get')
-            SecurityCheck = UserTable.objects.filter(id=PersonId,PSWD=OldPassword)
-            if SecurityCheck:
-                
-                NewPSWD = request.POST['NewPSWD']
-                ConfirmPSWD = request.POST['ConfirmPSWD']
-                if NewPSWD == ConfirmPSWD:
-                    SecurityCheck.update(PSWD=NewPSWD)
-                    messages.success(request,'Password succesfully changed')
-                    return redirect('viewUser',pk=PersonId)
+    Permission = hasPermission(request,'change password').PermissionStatus()
+    PersonId = request.POST['IdOfPerson']
+    if Permission:
+        if request.method == 'POST':
+            OldPassword = request.POST['OldPSWD']
+            if PersonId:
+                print('person id get')
+                SecurityCheck = UserTable.objects.filter(id=PersonId,PSWD=OldPassword)
+                if SecurityCheck:
+                    
+                    NewPSWD = request.POST['NewPSWD']
+                    ConfirmPSWD = request.POST['ConfirmPSWD']
+                    if NewPSWD == ConfirmPSWD:
+                        SecurityCheck.update(PSWD=NewPSWD)
+                        messages.success(request,'Password succesfully changed')
+                        return redirect('viewUser',pk=PersonId)
+                    else:
+                        messages.error(request,'Mismatch')
+                        return redirect('viewUser',pk=PersonId)
                 else:
-                    messages.error(request,'Mismatch')
+                    messages.error(request,'Incorrect Old Password')
                     return redirect('viewUser',pk=PersonId)
-            else:
-                messages.error(request,'Incorrect Old Password')
-                return redirect('viewUser',pk=PersonId)
-    
-def EditUser(request,pk):
-    container = loginPerson(request)
-    container['user'] = UserTable.objects.get(id=pk)
-    container['role'] = Role.objects.all()
-    container['dep'] = department.objects.all()
-    print(container['user'])
-    return render(request,'edituser.html',container)
+    else:
+        messages.warning(request, "You are not allowed to change password")
+        return redirect('viewUser',pk=PersonId)
 
+#edit user    
+def EditUser(request,pk):
+    Permission = hasPermission(request,'edit user').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        container['user'] = UserTable.objects.get(id=pk)
+        container['role'] = Role.objects.all()
+        container['dep'] = department.objects.all()
+        print(container['user'])
+        return render(request,'edituser.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('user')        
 def UpdateUser(request):
     if request.method == 'POST':
         name = request.POST['Name']
@@ -368,17 +395,20 @@ def UpdateUser(request):
         else:
             messages.error(request,'Something went wrong')
             return HttpResponseRedirect('user')
-            
+#disable user            
 def statuser(request,pk):
-    if request.method=='GET':
-        container = loginPerson(request)
-        container['user'] = UserTable.objects.get(id=pk)
-        if UserTable.objects.get(id=pk).status=='active':
-            return render(request,'inactiveuser.html',container)
-        else:
-            return render(request,'activeuser.html',container)
-
-
+    Permission = hasPermission(request,'edit user').PermissionStatus()
+    if Permission:    
+        if request.method=='GET':
+            container = loginPerson(request)
+            container['user'] = UserTable.objects.get(id=pk)
+            if UserTable.objects.get(id=pk).status=='active':
+                return render(request,'inactiveuser.html',container)
+            else:
+                return render(request,'activeuser.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('user')         
 def inactivateUser(request):
     if request.method=='POST':
         UserId = request.POST['a_id']
@@ -390,7 +420,6 @@ def inactivateUser(request):
             messages.warning(request,msg)
             return HttpResponseRedirect('user')
     return HttpResponseRedirect('user')
-
 def activateUser(request):
     if request.method=='POST':
         UserId = request.POST['a_id']
