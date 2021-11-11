@@ -54,15 +54,8 @@ def roleAddition(request):
         roleForm = RoleForm(request.POST)
         if roleForm.is_valid():
             roleForm.save()
-        # RoleName = request.POST['RoleName']
-        # RoleStatus = request.POST['RoleStatus']
-        # roleData = Role(
-        #     roleName = RoleName,
-        #     roleStatus = RoleStatus
-        # )
-        # roleData.save()
-
     return HttpResponseRedirect('role')
+    
 def actInact(request,pk):
     updateData = Role.objects.get(id=pk)
     container = {'update':updateData}
@@ -375,4 +368,37 @@ def UpdateUser(request):
         else:
             messages.error(request,'Something went wrong')
             return HttpResponseRedirect('user')
+            
+def statuser(request,pk):
+    if request.method=='GET':
+        container = loginPerson(request)
+        container['user'] = UserTable.objects.get(id=pk)
+        if UserTable.objects.get(id=pk).status=='active':
+            return render(request,'inactiveuser.html',container)
+        else:
+            return render(request,'activeuser.html',container)
 
+
+def inactivateUser(request):
+    if request.method=='POST':
+        UserId = request.POST['a_id']
+        if UserId:
+            UserTable.objects.filter(id=UserId).update(
+                status='inactive'
+            )
+            msg = '{} is inactivated'.format(UserTable.objects.get(id=UserId    ).name)
+            messages.warning(request,msg)
+            return HttpResponseRedirect('user')
+    return HttpResponseRedirect('user')
+
+def activateUser(request):
+    if request.method=='POST':
+        UserId = request.POST['a_id']
+        if UserId:
+            UserTable.objects.filter(id=UserId).update(
+                status='active'
+            )
+            msg = '{} is activated'.format(UserTable.objects.get(id=UserId    ).name)
+            messages.success(request,msg)
+            return HttpResponseRedirect('user')
+    return HttpResponseRedirect('user')

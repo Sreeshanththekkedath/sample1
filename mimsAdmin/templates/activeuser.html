@@ -1,0 +1,29 @@
+{% extends 'Main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Confirmation!</h6>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'activateUser' %}" method="post">
+                {% csrf_token %}
+                
+                <h6 class="m-0 font-weight-bold text-primary">Confirm To Activate 
+                    <br>
+                    <br>
+                    <strong>{{user.name}}</strong>
+                </h6>       
+                <input type="hidden" value="{{user.id}}" name="a_id">
+                <hr>
+                <a href="{% url 'user' %}" class="btn btn-outline-primary">Cancel</a>
+                <input type="submit" name="confirm" class="btn btn-primary" value="Activate">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
