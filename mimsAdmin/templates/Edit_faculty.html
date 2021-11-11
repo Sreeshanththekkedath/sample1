@@ -28,6 +28,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">CUSTOM FACULTY</h6>
         </div>
+        {% include 'messages.html' %}
         <div class="card-body">
             <form class="user" action="{% url 'updateFaculty' Faculty.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
                 <div class="row">
@@ -170,7 +171,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Professional Qualification</h6>
             <a href="{% url 'addQalification' Faculty.id %}" class="btn btn-primary" style="margin-left: 90%;">Add</a>
         </div>
-
+        
         <div class="card-body">
 
             <div class="table-responsive">

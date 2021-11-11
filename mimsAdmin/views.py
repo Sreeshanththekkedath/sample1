@@ -16,7 +16,6 @@ class hasPermission:
     
     def PermissionStatus(self):
         LoginId = self.request.session['loginid'] 
-        print(LoginId)
         if UserTable.objects.get(id=LoginId).status == 'active':
             RoleOfUser = UserTable.objects.get(id=LoginId).userRole
             PermissionOfUser = Permissions.objects.all().filter(PermissionOfRole=RoleOfUser)
@@ -79,18 +78,21 @@ def logout(request):
     messages.success(request, 'Logout successfully Completed')
     return render(request,'admin.html')
 
-
+#___holiday___
 def holiday(request):
-    #check whether the logined user has permission to access this view
-    #has_permission('holiday') ---loginuser read read role --read permission
     holiday_list = Holidays.objects.all()
     container = loginPerson(request)
     container['holiday_list'] = holiday_list
     return render(request,'Holiday.html',container)
-
+#add holiday
 def addholiday(request):
-    return render(request,'addholiday.html')
-
+    Permission = hasPermission(request,'add holiday').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        return render(request,'addholiday.html',container)
+    else:
+        messages.warning(request, 'You are not allowed to access')
+        return HttpResponseRedirect('holiday')
 def holiAddition(request):
     holiday_name = request.POST['holiday_name']
     holiday_date = request.POST['holiday_date']
@@ -98,17 +100,20 @@ def holiAddition(request):
     a.save()
     # print(holiday_name,holiday_date)
     return render(request,'addholiday.html')
-
-
+#disable holiday
 def inverts(request,pk):
-    Holiday = Holidays.objects.get(id=pk)
-    container = {'update':Holiday}
-    print(Holiday.id)
-    if Holiday.Holiday_status == 'active':
-        return render(request,'inactivate.html',container)
+    Permission = hasPermission(request,'disable holiday').PermissionStatus()
+    if Permission:
+        Holiday = Holidays.objects.get(id=pk)
+        container = {'update':Holiday}
+        print(Holiday.id)
+        if Holiday.Holiday_status == 'active':
+            return render(request,'inactivate.html',container)
+        else:
+            return render(request,'activate.html',container) 
     else:
-        return render(request,'activate.html',container)    
-
+        messages.warning(request, 'You are not allowed to access')
+        return HttpResponseRedirect('holiday')          
 def active(request):
     if request.method=='POST':
         ActiveByID = request.POST['a_id']
@@ -117,8 +122,6 @@ def active(request):
         container = loginPerson(request)
         container['holiday_list'] = holiday_list
         return render(request,'Holiday.html',container)
-
-
 def inactive(request):
     if request.method=='POST':
         InactiveByID = request.POST['i_id']
@@ -127,8 +130,6 @@ def inactive(request):
         container = loginPerson(request)
         container['holiday_list'] = holiday_list
         return render(request,'Holiday.html',container)       
-
-
 def filterHoliday(request):
     container = loginPerson(request)
     if request.method=='POST':
