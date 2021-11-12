@@ -73,6 +73,9 @@ urlpatterns = [
     path('ChangePSWD', viewsRole.ChangePSWD,name='ChangePSWD'),
     path('EditUser<str:pk>', viewsRole.EditUser,name='EditUser'),
     path('UpdateUser', viewsRole.UpdateUser,name='UpdateUser'),
+    path('statuser<str:pk>', viewsRole.statuser,name='statuser'),
+    path('inactivateUser', viewsRole.inactivateUser,name='inactivateUser'),
+    path('activateUser', viewsRole.activateUser,name='activateUser'),
 
 ]
 

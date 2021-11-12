@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from django.contrib import messages
@@ -8,8 +8,15 @@ from .views import loginPerson
 from .forms import *
 from .filters import DepartmentFilter
 from django.db.models import Q
+from .views import hasPermission
 
-
+#__department__
+def Department(request):
+    container = loginPerson(request)
+    depList = department.objects.all()
+    container['dep_list'] = depList
+    return render(request,'department.html',container)
+#add department
 def add_department(request):
     container = loginPerson(request)
     depHead = departmentHead.objects.all()
@@ -21,15 +28,7 @@ def add_department(request):
     container['departmentHead'] = depHead
     container['logBook'] = logBook
     return render(request,'add_department.html',container)
-
-def Department(request):
-    container = loginPerson(request)
-    depList = department.objects.all()
-    container['dep_list'] = depList
-    return render(request,'department.html',container)
-
 def depAddition(request):
-
     container = loginPerson(request)
     depHead = departmentHead.objects.all()
     logBook = [
@@ -85,10 +84,7 @@ def depAddition(request):
             departmentTable.save()
             messages.success(request, 'Department Added!')
     return render(request,'add_department.html',container)
-
-
-
-
+#view department
 def view_dep(request,pk):
     try:
         container = loginPerson(request)
@@ -99,7 +95,7 @@ def view_dep(request,pk):
     container['depDetails'] = depDetails
     # print(depDetails)
     return render(request,'depView.html',container) 
-
+#edit department
 def edit_dep(request,pk):
     try:
         container = loginPerson(request)
@@ -117,7 +113,6 @@ def edit_dep(request,pk):
     print(depDetails.AccreditationRenewalDate)
     container['depDetails'] = depDetails
     return render(request,'depEdit.html',container) 
-
 def UpdateDepartment(request):
     try:
         container = loginPerson(request)
@@ -166,8 +161,7 @@ def UpdateDepartment(request):
         messages.success(request, msg)
         return HttpResponseRedirect('Department')     
     return render(request,'department.html',container)
-
-
+#disable department
 def depinverts(request,pk):
     try:
         container = loginPerson(request)
@@ -181,9 +175,6 @@ def depinverts(request,pk):
         return render(request,'ActiveDep.html',container)
 
     return render(request,'department.html',container)
-
-
-
 def active_dep(request):
     try:
         container = loginPerson(request)
@@ -202,7 +193,6 @@ def active_dep(request):
             depDetails = department.objects.all()
             container['dep_list'] = depDetails
     return render(request,'department.html',container)
-
 def inactive_dep(request):
     try:
         container = loginPerson(request)
@@ -221,10 +211,6 @@ def inactive_dep(request):
             depDetails = department.objects.all()
             container['dep_list'] = depDetails
     return render(request,'department.html',container)
-
-
-
-
 def filterdepartment(request):
     try:
         container = loginPerson(request)
@@ -239,17 +225,30 @@ def filterdepartment(request):
 
 
 
+#__faculty__
+def faculty(request):
+    container = loginPerson(request)
+    FacultyDetails = Faculty.objects.all()
+    departments = department.objects.all()
+    container['dep'] = departments
+    container['Faculty'] = FacultyDetails
+    return render(request,'faculty.html',container)
+#add faculty
 def addfaculty(request):
-    departmets = department.objects.all()
-    Course = course.objects.all()
-    try:
-        container = loginPerson(request)
-    except:
-        return render(request,'admin.html')
-    container['dep'] = departmets
-    container['course'] = Course
-    return render(request,'addfaculty.html',container)
-
+    Permission = hasPermission(request,'add faculty').PermissionStatus()
+    if Permission:
+        departmets = department.objects.all()
+        Course = course.objects.all()
+        try:
+            container = loginPerson(request)
+        except:
+            return render(request,'admin.html')
+        container['dep'] = departmets
+        container['course'] = Course
+        return render(request,'addfaculty.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('faculty')
 def additionFaculty(request):
     if request.method=='POST':
         FacultyName = request.POST['FacultyName']
@@ -280,7 +279,6 @@ def additionFaculty(request):
         Document = request.FILES.getlist('Document[]')
         count = request.POST.getlist('count[]')
 
- 
         print(FacultyDepartment)
         FDepartment = department.objects.get(id = FacultyDepartment)
         try:
@@ -345,7 +343,6 @@ def additionFaculty(request):
                 )
                 ProfessionalQualificationTable.save()
 
-
             PeriodOfEmployment = request.POST.getlist('PeriodOfEmployment[]')
             From = request.POST.getlist('From[]')
             To = request.POST.getlist('To[]')
@@ -373,43 +370,42 @@ def additionFaculty(request):
                 
             messages.success(request, 'New Faculty added')
             return HttpResponseRedirect('faculty')
-
     return HttpResponseRedirect('faculty')
-
-def faculty(request):
-    container = loginPerson(request)
-    FacultyDetails = Faculty.objects.all()
-    departments = department.objects.all()
-    container['dep'] = departments
-    container['Faculty'] = FacultyDetails
-    return render(request,'faculty.html',container)
-
-
+#view faculty
 def view_faculty(request,pk):
-    container = loginPerson(request)
-    FacultyDetails = Faculty.objects.get(id=pk)
-    Qualification = ProfessionalQualification.objects.filter(PersonOfQualification=pk)
-    Exp = Experience.objects.all().filter(PersonOfExperience=pk)
-    container['Faculty'] = FacultyDetails
-    container['Qualification'] = Qualification
-    container['Experience'] = Exp
-    return render(request,'view_faculty.html',container)
-
+    Permission = hasPermission(request,'add faculty').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        FacultyDetails = Faculty.objects.get(id=pk)
+        Qualification = ProfessionalQualification.objects.filter(PersonOfQualification=pk)
+        Exp = Experience.objects.all().filter(PersonOfExperience=pk)
+        container['Faculty'] = FacultyDetails
+        container['Qualification'] = Qualification
+        container['Experience'] = Exp
+        return render(request,'view_faculty.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('faculty')
+#edit faculty
 def EditFaculty(request,pk):
-    container = loginPerson(request)
-    FacultyDetails = Faculty.objects.get(id=pk)
-    Qualification = ProfessionalQualification.objects.filter(PersonOfQualification=pk)
-    Exp = Experience.objects.all().filter(PersonOfExperience=pk)
-    departmets = department.objects.all()
-    Course = course.objects.all()
-    container['dep'] = departmets
-    container['course'] = Course
-    container['Faculty'] = FacultyDetails
-    container['Qualification'] = Qualification
-    container['Experience'] = Exp
-    return render(request,'Edit_faculty.html',container)
-
-
+    print("edit of",pk)
+    Permission = hasPermission(request,'edit faculty').PermissionStatus()
+    if Permission:
+        container = loginPerson(request)
+        FacultyDetails = Faculty.objects.get(id=pk)
+        Qualification = ProfessionalQualification.objects.filter(PersonOfQualification=pk)
+        Exp = Experience.objects.all().filter(PersonOfExperience=pk)
+        departmets = department.objects.all()
+        Course = course.objects.all()
+        container['dep'] = departmets
+        container['course'] = Course
+        container['Faculty'] = FacultyDetails
+        container['Qualification'] = Qualification
+        container['Experience'] = Exp
+        return render(request,'Edit_faculty.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('faculty')
 def updateFaculty(request,pk):
     if request.method=='POST':
         FacultyName = request.POST['FacultyName']
@@ -448,20 +444,21 @@ def updateFaculty(request,pk):
             MobileAlt = MobileNumberAlt,
             Email = EmailId,
             PostPGExperience = PGExperience
-        )
-    
-    
+        )    
     return HttpResponseRedirect('faculty')
-
+# add qualification
 def addQalification(request,pk):
-    container = loginPerson(request)
-    Course = course.objects.all()
-    container['course'] = Course
-    container['personid'] = pk
-    return render(request,'addQalification.html',container)
-
+    Permission = hasPermission(request,'add qualification').PermissionStatus()
+    if Permission:   
+        container = loginPerson(request)
+        Course = course.objects.all()
+        container['course'] = Course
+        container['personid'] = pk
+        return render(request,'addQalification.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return redirect('EditFaculty',pk=pk)
 def QualiAddition(request,pk):
-
     if request.method=='POST':
         CourseName=request.POST.getlist('CourseName[]')
         SpecializationArea=request.POST.getlist('SpecializationArea[]')
@@ -488,12 +485,17 @@ def QualiAddition(request,pk):
             ProfessionalQualificationTable.save()
         messages.success(request, 'New Qualification Added')
     return HttpResponseRedirect('faculty')
-
+#delete qualification
 def deleteQua(request,pk):
-    data = ProfessionalQualification.objects.get(id=pk)
-    container = {'data':data}
-    return render(request,'deleteConfo.html',container)
-
+    pid = ProfessionalQualification.objects.get(id=pk).PersonOfQualification.id
+    Permission = hasPermission(request,'delete qualification').PermissionStatus()
+    if Permission: 
+        data = ProfessionalQualification.objects.get(id=pk)
+        container = {'data':data}
+        return render(request,'deleteConfo.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return redirect('EditFaculty',pk=pid)        
 def delete(request):
     if request.method == 'POST':
         deleteId = request.POST['d_id']
@@ -502,12 +504,17 @@ def delete(request):
         delData.delete()
         messages.success(request, msg)
     return HttpResponseRedirect('faculty')
-
+#delete experience
 def deleteExp(request,pk):
-    data = Experience.objects.get(id=pk)
-    container = {'data':data}
-    return render(request,'deleteConfo1.html',container)
-
+    pid = Experience.objects.get(id=pk).PersonOfExperience.id
+    Permission = hasPermission(request,'delete qualification').PermissionStatus()
+    if Permission: 
+        data = Experience.objects.get(id=pk)
+        container = {'data':data}
+        return render(request,'deleteConfo1.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return redirect('EditFaculty',pk=pid)         
 def deleteE(request):
     if request.method == 'POST':
         deleteId = request.POST['d_id']
@@ -516,16 +523,18 @@ def deleteE(request):
         delData.delete()
         messages.success(request, msg)
     return HttpResponseRedirect('faculty')
-
+#add experience
 def addExperience(request,pk):
-    container = loginPerson(request)
-    container['personid'] = pk
-    return render(request,'addExperience.html',container)
-
+    Permission = hasPermission(request,'add experience').PermissionStatus()
+    if Permission: 
+        container = loginPerson(request)
+        container['personid'] = pk
+        return render(request,'addExperience.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return redirect('EditFaculty',pk=pk) 
 def ExpAddition(request,pk):
-
     if request.method=='POST':
-
         person = Faculty.objects.get(id=pk)
         PeriodOfEmployment = request.POST.getlist('PeriodOfEmployment[]')
         From = request.POST.getlist('From[]')
@@ -536,7 +545,6 @@ def ExpAddition(request,pk):
         EmploymentStatus = request.POST.getlist('EmploymentStatus[]')
         HoursSpent = request.POST.getlist('HoursSpent[]')
         associated = request.POST.getlist('associated[]')
-
         for i in range(len(PeriodOfEmployment)):
             ExperienceTable = Experience(
                 PeriodOfEmployment = PeriodOfEmployment[i],
@@ -553,12 +561,10 @@ def ExpAddition(request,pk):
             ExperienceTable.save()
         messages.success(request, 'New Experience Added')
     return HttpResponseRedirect('faculty')
-
 def filterfaculty(request):
     container = loginPerson(request)
     departments = department.objects.all()
-    container['dep'] = departments
-    
+    container['dep'] = departments   
     if request.method == 'POST':
         filterByName = request.POST['filterByName']
         FilterByDep = request.POST['FilterByDep']
@@ -573,19 +579,21 @@ def filterfaculty(request):
         if not filterByName and not FilterByDep and not filterByPhone:
             container['Faculty'] = Faculty.objects.all()
     return render(request,'faculty.html',container)
-
+#delete faculty
 def facultyDelete(request,pk):
-    data = Faculty.objects.get(id=pk)
-    container = {'data':data}
-    return render(request,'deleteFac.html',container)
+    Permission = hasPermission(request,'edit faculty').PermissionStatus()
+    if Permission:
+        data = Faculty.objects.get(id=pk)
+        container = {'data':data}
+        return render(request,'deleteFac.html',container)
+    else:
+        messages.warning(request, "You are not allowed to access")
+        return HttpResponseRedirect('faculty')       
 def deleteFac(request):
     deleteId = request.POST['d_id']
     delData = Faculty.objects.get(id=deleteId)
     ExpDelData = Experience.objects.all().filter(PersonOfExperience=delData)
     QaliDelData = ProfessionalQualification.objects.all().filter(PersonOfQualification=delData)
-    # print(delData)
-    # print(ExpDelData)
-    # print(QaliDelData)
     msg = '{} Deleted'.format(delData.FacultyName)
     QaliDelData.delete()
     ExpDelData.delete()

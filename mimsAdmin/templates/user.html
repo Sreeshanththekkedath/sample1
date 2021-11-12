@@ -103,11 +103,11 @@
                                 </a>
 
                                 {% if j.status != 'active' %}
-                                <a href="" onclick="" id="act" class="">
+                                <a href="{% url 'statuser' j.id %}" onclick="" id="act" class="">
                                     <i class="fas fa-check"></i>
                                 </a>
                                 {% else %}
-                                <a href="" onclick="" class="" id="inact">
+                                <a href="{% url 'statuser' j.id %}" onclick="" class="" id="inact">
                                     <i class="fas fa-times"></i>
                                 </a>
                                 {% endif %}
