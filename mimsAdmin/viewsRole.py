@@ -431,3 +431,10 @@ def activateUser(request):
             messages.success(request,msg)
             return HttpResponseRedirect('user')
     return HttpResponseRedirect('user')
+
+
+#__conferenceOrganizer__
+def conferenceOrganizer(request):
+    container = loginPerson(request)
+    return render(request,'conferenceOrganizer.html',container)
+    

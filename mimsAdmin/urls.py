@@ -76,6 +76,7 @@ urlpatterns = [
     path('statuser<str:pk>', viewsRole.statuser,name='statuser'),
     path('inactivateUser', viewsRole.inactivateUser,name='inactivateUser'),
     path('activateUser', viewsRole.activateUser,name='activateUser'),
+    path('conferenceOrganizer', viewsRole.conferenceOrganizer,name='conferenceOrganizer'),
 
 ]
 
