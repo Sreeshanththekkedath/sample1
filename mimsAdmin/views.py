@@ -40,7 +40,7 @@ def login(request):
     if request.method=='POST':
         user_name = request.POST['username']
         passwd = request.POST['password']
-        a=UserTable.objects.get(username=user_name,PSWD=passwd)
+        a=UserTable.objects.get(username=user_name,PSWD=passwd)        
         print(a)
         if a:           
             request.session['loginid']=a.id
@@ -63,8 +63,12 @@ def loginPerson(request):
         return HttpResponse('not')
 
 def index(request):
-    container = loginPerson(request)
-    return render(request,'index.html',container)
+    if 'loginid' in request.session:
+        container = loginPerson(request)
+        return render(request,'index.html',container)
+    else:
+        return HttpResponseRedirect('/')
+        # return render(request,'admin.html')
 
 
 
