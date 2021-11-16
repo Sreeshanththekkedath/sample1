@@ -77,6 +77,14 @@ urlpatterns = [
     path('inactivateUser', viewsRole.inactivateUser,name='inactivateUser'),
     path('activateUser', viewsRole.activateUser,name='activateUser'),
     path('conferenceOrganizer', viewsRole.conferenceOrganizer,name='conferenceOrganizer'),
+    path('addOrganizer', viewsRole.addOrganizer,name='addOrganizer'),
+    path('editOrganizer<str:pk>', viewsRole.editOrganizer,name='editOrganizer'),
+    path('disableOrganizer', viewsRole.disableOrganizer,name='disableOrganizer'),
+    path('books', viewsRole.books,name='books'),
+    path('addbook', viewsRole.addbook,name='addbook'),
+    path('disableBook', viewsRole.disableBook,name='disableBook'),
+    path('viewBook<str:pk>', viewsRole.viewBook,name='viewBook'),
+    path('editBook<str:pk>', viewsRole.editBook,name='editBook'),
 
 ]
 

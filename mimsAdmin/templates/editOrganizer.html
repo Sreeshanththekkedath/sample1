@@ -1,0 +1,69 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">EDIT USER</h1>
+    <p class="mb-4">
+        <a  href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a  href="{% url 'conferenceOrganizer' %}">Conference Organizer</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>Edit Organizer</strong>
+        <a href="{% url 'conferenceOrganizer' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">EDIT ORGANIZER</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'editOrganizer' userid %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <!-- <div class="col-sm-6 p-3">
+                        <label for="fac_name">Organizer Name </label>
+                        <span style="color:red"> *</span>
+                        <input type="text" name="Name" id="yourElem" class="form-control" required>
+                    </div>
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">Name </label>
+                        <span style="color:red"> *</span>
+                        <select name="status" id="" class="form-control">
+                            <option value="active" selected>Activate</option>
+                            <option value="inactive">Inactivate</option>
+                        </select>
+                    </div> -->
+                    {% for Fields in form %}
+                    <div class="col-sm-6 p-3">
+                        <label for="fac_name">{{Fields.label}}</label>
+                        <span style="color:red"> *</span>
+                        {{Fields}}
+                    </div>
+
+                    {% endfor %}
+                    <hr>
+                    <div class="col-sm-6">
+                        <a href="{% url 'conferenceOrganizer' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Update
+                            </button>
+                    </div>
+               
+                </div>
+  
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock content %}

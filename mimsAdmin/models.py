@@ -179,3 +179,31 @@ class UserTable(models.Model):
 
     def __str__(self):
         return self.name
+
+class ConferenceOrganizerTable(models.Model):
+    choices = (
+        ('active','Activate'),
+        ('inactive','Inactivate')
+    )
+    Organizezr_Name = models.CharField(max_length=100)
+    Organizezr_status = models.CharField(max_length=100,choices=choices)
+    class Meta:
+        db_table = 'ConferenceOrganizerTable'
+
+
+class BooksTable(models.Model):
+    Books_Name = models.CharField(max_length=100)
+    Department = models.ManyToManyField(
+        department,  
+        verbose_name="list of department",
+    )
+    Auther_Name = models.CharField(max_length=100)
+    Books_availability = models.IntegerField()
+    Books_Edition = models.CharField(max_length=100)
+    Short_Summary = models.TextField()
+    Books_status = models.CharField(max_length=100,default='active')
+    class Meta:
+        db_table = 'BooksTable'
+        unique_together = [['Books_Name','Auther_Name','Books_Edition']]
+
+

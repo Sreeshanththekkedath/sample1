@@ -6,9 +6,10 @@ from django.http import HttpResponseRedirect,JsonResponse
 from .models import *
 from django.db.models import Q
 from .views import loginPerson
-from .forms import RoleForm
+from .forms import RoleForm,OrganizerForm,BooksForm
 from django.shortcuts import redirect
 from .views import hasPermission
+from django.core import serializers
 
 
 
@@ -416,7 +417,7 @@ def inactivateUser(request):
             UserTable.objects.filter(id=UserId).update(
                 status='inactive'
             )
-            msg = '{} is inactivated'.format(UserTable.objects.get(id=UserId    ).name)
+            msg = '{} is inactivated'.format(UserTable.objects.get(id=UserId).name)
             messages.warning(request,msg)
             return HttpResponseRedirect('user')
     return HttpResponseRedirect('user')
@@ -427,7 +428,7 @@ def activateUser(request):
             UserTable.objects.filter(id=UserId).update(
                 status='active'
             )
-            msg = '{} is activated'.format(UserTable.objects.get(id=UserId    ).name)
+            msg = '{} is activated'.format(UserTable.objects.get(id=UserId).name)
             messages.success(request,msg)
             return HttpResponseRedirect('user')
     return HttpResponseRedirect('user')
@@ -435,6 +436,189 @@ def activateUser(request):
 
 #__conferenceOrganizer__
 def conferenceOrganizer(request):
+    if 'loginid' in request.session:
+        container = loginPerson(request)
+        container['Organizers'] = ConferenceOrganizerTable.objects.all()
+        if request.method=="POST":
+            filterByName = request.POST['filterByName']
+            container['Organizers'] = ConferenceOrganizerTable.objects.filter(Q(Organizezr_Name__icontains=filterByName))
+            return render(request,'conferenceOrganizer.html',container)
+        return render(request,'conferenceOrganizer.html',container)
+    else:
+        return HttpResponseRedirect('/')
+#add conference organizer
+def addOrganizer(request):
+    if 'loginid' in request.session:
+        container = loginPerson(request)
+        Permission = hasPermission(request,'add conference organizer').PermissionStatus()
+        if Permission:   
+            container['Form']=OrganizerForm()
+            if request.method == 'POST':
+                OrganizerFormData = OrganizerForm(request.POST)
+                if OrganizerFormData.is_valid():
+                    OrganizerFormData.save()
+                    return HttpResponseRedirect('conferenceOrganizer')
+            return render(request,'addorganizer.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('conferenceOrganizer')             
+    else:
+        return HttpResponseRedirect('/')
+#edit conference organizer
+def editOrganizer(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit conference organizer').PermissionStatus()
+        if Permission: 
+            container = loginPerson(request)
+            if request.method=='POST':
+                instance = ConferenceOrganizerTable.objects.get(id=pk)
+                OrganizerFormData = OrganizerForm(request.POST,instance=instance)
+                if OrganizerFormData.is_valid():
+                    OrganizerFormData.save()
+                    return HttpResponseRedirect('conferenceOrganizer')
+                else:
+                    pass
+            form = OrganizerForm(initial = {
+                'Organizezr_Name':ConferenceOrganizerTable.objects.get(id=pk).Organizezr_Name,
+                'Organizezr_status':ConferenceOrganizerTable.objects.get(id=pk).Organizezr_status
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editOrganizer.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('conferenceOrganizer')
+    else:
+        return HttpResponseRedirect('/')
+    return render(request,'editOrganizer.html',container)
+#disable organizer
+def disableOrganizer(request): 
+    if 'loginid' in request.session:  
+        Permission = hasPermission(request,'disable organizer').PermissionStatus()
+        if Permission: 
+            if request.method=="POST":
+                getById = request.POST['getById']
+                if ConferenceOrganizerTable.objects.get(id=getById).Organizezr_status == 'active':
+                    ConferenceOrganizerTable.objects.filter(id=getById).update(Organizezr_status='inactive')
+                    messages.warning(request, "{} is Inactivated".format(ConferenceOrganizerTable.objects.get(id=getById).Organizezr_Name))
+                else:
+                    ConferenceOrganizerTable.objects.filter(id=getById).update(Organizezr_status='active')
+                    messages.success(request, "{} is Activated".format(ConferenceOrganizerTable.objects.get(id=getById).Organizezr_Name))
+            return HttpResponseRedirect('conferenceOrganizer')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('conferenceOrganizer')            
+    else:
+        return HttpResponseRedirect('/')
+
+#__books__
+def books(request):
     container = loginPerson(request)
-    return render(request,'conferenceOrganizer.html',container)
+    container['books'] = BooksTable.objects.all()
+    container['dep'] = department.objects.all()
+    if request.method=="POST":
+        FilterByDep=request.POST['FilterByDep']
+        filterByAuther=request.POST['filterByAuther']
+        filterByName=request.POST['filterByName']      
+        if FilterByDep:
+            container['books'] = BooksTable.objects.filter(Department__id=FilterByDep)
+        if filterByAuther:
+            container['books']=BooksTable.objects.filter(Q(Auther_Name__icontains=filterByAuther))
+        if filterByName:
+            container['books']=BooksTable.objects.filter(Q(Books_Name__icontains=filterByName))
+        else:
+            container['books'] = BooksTable.objects.all()
+    else:
+        pass
+    return render(request,'books.html',container)
     
+#add books
+def addbook(request):
+    if 'loginid' in request.session: 
+        Permission = hasPermission(request,'add books').PermissionStatus()
+        if Permission: 
+            container = loginPerson(request)
+            container['form'] = BooksForm()
+            if request.method=="POST":
+                BookData=BooksForm(request.POST)
+                if BookData.is_valid():
+                    BookData.save() 
+                    messages.success(request, "{} added".format(BookData.cleaned_data['Books_Name']))
+                    return HttpResponseRedirect('books')
+                else:
+                    messages.warning(request, "{} is alreday existed".format(BookData.cleaned_data['Books_Name']))
+                    return HttpResponseRedirect('books')
+            return render(request,'addbook.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('books')  
+    else:
+        return HttpResponseRedirect('/')
+#view book
+def viewBook(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit book').PermissionStatus()
+        if Permission: 
+            container = loginPerson(request)
+            container['book'] = BooksTable.objects.get(id=pk)
+            return render(request,'viewbooks.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('books')  
+    else:
+        return HttpResponseRedirect('/')          
+#edit book
+def editBook(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit book').PermissionStatus()
+        if Permission: 
+            container = loginPerson(request)
+            if request.method=="POST":
+                instance = BooksTable.objects.get(id=pk)
+                BooksTableDate = BooksForm(request.POST,instance=instance)
+                if BooksTableDate.is_valid():
+                    BooksTableDate.save()
+                    messages.success(request,'{} successfully updated'.format(BooksTableDate.cleaned_data['Books_Name']))
+                    return HttpResponseRedirect('books')
+                else:
+                    messages.warning(request,'something went wrong')
+                    return HttpResponseRedirect('books')
+            form = BooksForm(initial = {
+                'Books_Name':BooksTable.objects.get(id=pk).Books_Name,
+                'Auther_Name':BooksTable.objects.get(id=pk).Auther_Name,
+                'Books_availability':BooksTable.objects.get(id=pk).Books_availability,
+                'Books_Edition':BooksTable.objects.get(id=pk).Books_Edition,
+                'Short_Summary':BooksTable.objects.get(id=pk).Short_Summary,
+                'Department':BooksTable.objects.get(id=pk).Department.all()
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editBooks.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('books')            
+    else:
+        return HttpResponseRedirect('/')
+#disable book
+def disableBook(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit book').PermissionStatus()
+        if Permission: 
+            if request.method=="POST":
+                getById = request.POST['getById']
+                if BooksTable.objects.get(id=getById).Books_status == 'active':
+                    BooksTable.objects.filter(id=getById).update(Books_status='inactive')
+                    messages.warning(request, "{} is Inactivated".format(BooksTable.objects.get(id=getById).Books_Name))
+                else:
+                    BooksTable.objects.filter(id=getById).update(Books_status='active')
+                    messages.success(request, "{} is Activated".format(BooksTable.objects.get(id=getById).Books_Name))
+            return HttpResponseRedirect('books')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('books') 
+    else:
+        return HttpResponseRedirect('/')
+
+#__log master__
+def logMaster(request):
+    return render(request,'logmaster.html')

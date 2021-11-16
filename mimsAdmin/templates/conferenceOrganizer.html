@@ -1,75 +1,45 @@
 {% extends 'Main.html' %}
-{% block contends %}
+{% load static %}
+{% block content %}
 
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">USER</h1>
+    <h1 class="h3 mb-2 text-gray-800">Conference Organizer</h1>
     <p class="mb-4">
         <a href="{% url 'index' %}">Home</a>
         <strong>/</strong>
-        <a href="{% url 'user' %}">User</a>
+        <a href="">Conference Organizer</a>
         <strong>+</strong>
-        <a href="">Add User</a>
+        <a href="">Add Conference Organizer</a>
     </p>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">User</h6>
-            <div class="col-sm-3" style="margin-left: 70%;">
-                <a href="{% url 'addUser' %}" class="btn btn-primary btn-block" style="width: 100%;">
-                    Add User
-                </a>
-            </div>
+            <h6 class="m-0 font-weight-bold text-primary">Conference Organizer<a style="margin-left:80%;"
+                    href="{% url 'addOrganizer' %}" class="btn btn-primary">Add</a></h6>
+
         </div>
         {% include 'messages.html' %}
-
         <div class="card-body">
-            <form class="user" action="{% url 'userFilter' %}" method="post">{% csrf_token %}
+            <form class="user" action="{% url 'conferenceOrganizer' %}" method="post">{% csrf_token %}
                 <div class="form-group row">
                     <div class="col-sm-3 mb-3 mb-sm-0">
                         <input type="text" class="form-control form-control" id="name" name="filterByName"
-                            placeholder="Name">
+                            placeholder="Organizer name">
                     </div>
-                    <div class="col-sm-3">
-                        <select name="FilterByRole" id="role" class="form-control">
-                            <option value="">Role</option>
-                            {% for roles in role %}
-                            <option value="{{roles.id}}"> {{ roles.roleName }} </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select name="FilterByDep" id="department" class="form-control">
-                            <option value="">Department</option>
-                            {% for departments in dep %}
-                            <option value="{{departments}}"> {{ departments }} </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select name="FilterByStatus" id="department" class="form-control">
-                            <option value="">Status</option>
-                            <option value="active"> Active </option>
-                            <option value="inactive"> Inactive </option>
-
-                        </select>
-                    </div>
-
-                </div>
-
-                <div class="form-group row">
+                    <div class="col-sm-3"></div>
                     <div class="col-sm-3">
                         <button type="submit" id="form-submit" class="btn btn-primary"
                             style="width: 100%;">Filter</button>
                     </div>
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-3"></div>
                     <div class="col-sm-3">
                         <button type="reset" id="clr" class="btn btn-primary" style="width: 100%;">Clear</button>
                     </div>
                 </div>
+
+
             </form>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -78,51 +48,120 @@
                         <tr>
                             <th>SI NO</th>
                             <th>NAME</th>
-                            <th>PHONE</th>
-                            <th>ROLE</th>
-                            <th>DEPARTMENT</th>
                             <th>STATUS</th>
                             <th>ACTION</th>
                         </tr>
                     </thead>
-                    {% for j in user1 %}
+                    {% for organizer in Organizers %}
                     <tbody>
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td>{{j.name}}</td>
-                            <td>{{j.phone}}</td>
-                            <td>{{j.userRole}}</td>
-                            <td>{{j.userDepartMent}}</td>
-                            <td>{{j.status}}</td>
+                            <td>{{organizer.Organizezr_Name}}</td>
+                            <td>{{organizer.Organizezr_status}}
+
+
+                            </td>
+
                             <td>
-                                <a href="{% url 'viewUser' j.id %}" onclick="" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{% url 'EditUser' j.id %}" onclick="" title="View">
+                                <a href="{% url 'editOrganizer' organizer.id %}" onclick="" title="View">
                                     <i class="fas fa-edit"></i>
                                 </a>
 
-                                {% if j.status != 'active' %}
-                                <a href="{% url 'statuser' j.id %}" onclick="" id="act" class="">
+
+
+                                <div class="modal fade" id="Activate" tabindex="" role="dialog"
+                                    aria-labelledby="exampleModalLabel">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{% url 'disableOrganizer' %}" method="post">{% csrf_token %}
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                                                    <button class="close" type="button" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Confirm to Activate <span id="orgName"></span></p>
+                                                    <input type="hidden" name="getById" id="orgId">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <input class="btn btn-primary" type="submit" name="" id=""
+                                                        value="Activate">
+
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="Inactivate" tabindex="" role="dialog"
+                                    aria-labelledby="exampleModalLabel">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{% url 'disableOrganizer' %}" method="post">{% csrf_token %}
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                                                    <button class="close" type="button" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Confirm to Inactivate <span id="orgName1"></span></p>
+                                                    <input type="hidden" name="getById" id="orgId1">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <input class="btn btn-primary" type="submit" name="" id=""
+                                                        value="Inactivate">
+
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {% if organizer.Organizezr_status != 'active' %}
+                                <a class="acti" data-toggle="modal" data-target="#Activate"
+                                    data-name="{{organizer.Organizezr_Name}}" data-description="{{organizer.id}}">
                                     <i class="fas fa-check"></i>
                                 </a>
                                 {% else %}
-                                <a href="{% url 'statuser' j.id %}" onclick="" class="" id="inact">
+                                <a class="inacti" data-toggle="modal" data-target="#Inactivate"
+                                    data-name="{{organizer.Organizezr_Name}}" data-description="{{organizer.id}}">
                                     <i class="fas fa-times"></i>
                                 </a>
                                 {% endif %}
-               
+
                             </td>
                         </tr>
+
                     </tbody>
+                    <!-- activate -->
+
                     {% endfor %}
                 </table>
             </div>
         </div>
     </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $('.acti').click(function () {
+        $('#orgName').html($(this).data('name'));
+        $('#orgId').val($(this).data('description'));
+    });
+</script>
+<script>
+    $('.inacti').click(function () {
+        $('#orgName1').html($(this).data('name'));
+        $('#orgId1').val($(this).data('description'));
+    });
+</script>
 
-    </div>
 
-
-
-{% endblock contends %}
+{% endblock content %}
