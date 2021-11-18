@@ -1,0 +1,86 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD PUBLICATIONS</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'publications' %}">Publications</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'addfaculty' %}"></a> -->
+        <strong>Add Publication</strong>
+        <a href="{% url 'publications' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">ADD PUBLICATIONS</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'addPublications' %}" method="post">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group row">
+                        
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Publication_Title.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Publication_Title}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Volume.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Volume}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Publication_Author.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Publication_Author}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.issue.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.issue}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Publisher_name.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Publisher_name}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Website_Id.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Website_Id}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Journal.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Journal}}            
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Date.label}}</label>
+                            <span style="color:red"> *</span>
+                            <!-- <input type="date" name="Date" class="form-control"> -->
+                            {{form.Date}}            
+                        </div>
+                        {{form.status.as_hidden}}            
+                        
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'books' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Log Master</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

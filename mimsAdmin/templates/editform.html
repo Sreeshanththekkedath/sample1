@@ -1,0 +1,71 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">EDIT FORM</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'form' %}">Form</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'addfaculty' %}"></a> -->
+        <strong>Edit Form</strong>
+        <a href="{% url 'form' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">ADD FORM</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'editForm' userid %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <label for="fac_name" style="margin-top: 10px;margin-bottom: 32px;">{{form.Form_name.label}}</label>
+                        <span style="color:red"> *</span>
+                        <br> 
+                        {{form.Form_name}}
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="fac_name" style="margin-top: 10px;">{{form.Form.label}}</label>
+                        <span style="color:red"> *</span>
+                        {{form.Form}}
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="fac_name" style="margin-top: 10px;">{{form.status.label}}</label>
+                        <span style="color:red"> *</span>
+                        {{form.status}}
+                    </div>
+                </div>
+                <br>
+                <br>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'form' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+        function validate(file) {
+        var ext = file.split(".");
+        ext = ext[ext.length - 1].toLowerCase();
+        var arrayExtensions = ["jpg", "jpeg", "png", "pdf"];
+
+        if (arrayExtensions.lastIndexOf(ext) == -1) {
+            alert("Wrong extension type.");
+            $("#val").val("");
+        }
+    }
+</script>
+
+{% endblock content %}

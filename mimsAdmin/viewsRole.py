@@ -6,10 +6,11 @@ from django.http import HttpResponseRedirect,JsonResponse
 from .models import *
 from django.db.models import Q
 from .views import loginPerson
-from .forms import RoleForm,OrganizerForm,BooksForm
+from .forms import *
 from django.shortcuts import redirect
 from .views import hasPermission
 from django.core import serializers
+
 
 
 
@@ -621,4 +622,392 @@ def disableBook(request):
 
 #__log master__
 def logMaster(request):
-    return render(request,'logmaster.html')
+    container = loginPerson(request)
+    container['logMasters'] = LogMasterTable.objects.all()
+    if request.method=="POST":
+        filterByName=request.POST['filterByName']
+        if filterByName:
+            container['logMasters']=LogMasterTable.objects.filter(Q(Name__icontains=filterByName))
+    return render(request,'logmaster.html',container)
+#add log master
+def addLogMaster(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'add log master').PermissionStatus()
+        if Permission: 
+            container = loginPerson(request)
+            container['form'] = LogMasterForm()
+            if request.method=="POST":
+                LogData = LogMasterForm(request.POST)
+                if LogData.is_valid():
+                    LogData.save()
+                    return HttpResponseRedirect('logMaster')
+            return render(request,'addLog.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('logMaster') 
+    else:
+        return HttpResponseRedirect('/')
+#disable log master
+def disableLog(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'disable log master').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                getById=request.POST['getById']
+                if getById:
+                    if LogMasterTable.objects.get(id=getById).status=='inactive':
+                        LogMasterTable.objects.filter(id=getById).update(status='active')
+                        messages.success(request,'{} activated'.format(LogMasterTable.objects.get(id=getById).Name))
+                        return HttpResponseRedirect('logMaster')
+                    else:
+                        messages.warning(request,'{} inactivated'.format(LogMasterTable.objects.get(id=getById).Name))
+                        LogMasterTable.objects.filter(id=getById).update(status='inactive')
+                        return HttpResponseRedirect('logMaster')
+            return HttpResponseRedirect('logMaster')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('logMaster') 
+    else:
+        return HttpResponseRedirect('/')
+#edit log master
+def editLog(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit log master').PermissionStatus()
+        if Permission:
+            container=loginPerson(request)
+            if request.method=="POST":
+                instance = LogMasterTable.objects.get(id=pk)
+                LogMasterData = LogMasterForm(request.POST,instance=instance)
+                if LogMasterData.is_valid():
+                    LogMasterData.save()
+                    messages.success(request,'{} successfully updated'.format(LogMasterData.cleaned_data['Name']))
+                    return HttpResponseRedirect('logMaster')
+                else:
+                    pass
+            form = LogMasterForm(initial = {
+                'Name':LogMasterTable.objects.get(id=pk).Name,
+                'status':LogMasterTable.objects.get(id=pk).status,
+                'TableHeads':LogMasterTable.objects.get(id=pk).TableHeads.all()
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editLog.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('logMaster') 
+    else:
+        return HttpResponseRedirect('/')
+#view log master
+def viewLog(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'view log master').PermissionStatus()
+        if Permission:
+            container=loginPerson(request)
+            container['logMaster'] = LogMasterTable.objects.get(id=pk)
+            return render(request,'viewLog.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('logMaster') 
+    else:
+        return HttpResponseRedirect('/')
+
+#__publications__
+def publications(request):
+    container = loginPerson(request)
+    container['publications'] = PublicationTable.objects.all()
+    if request.method=="POST":
+        filterByTitle=request.POST['filterByTitle']
+        if filterByTitle:
+            container['publications'] = PublicationTable.objects.filter(Q(Publication_Title__icontains=filterByTitle))
+    return render(request,'publications.html',container)
+#add publications
+def addPublications(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'add publications').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                PublicationData = PublicationForm(request.POST)
+                if PublicationData.is_valid():
+                    PublicationData.save()
+                    messages.success(request,'publication {} added'.format(PublicationData.cleaned_data['Publication_Title']))
+                    return HttpResponseRedirect('publications')
+                else:
+                    pass
+            container = loginPerson(request)
+            container['form'] = PublicationForm()
+            return render(request,'addpublications.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('publications') 
+    else:
+        return HttpResponseRedirect('/')
+#edit publications
+def editPublications(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit publications').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                instance = PublicationTable.objects.get(id=pk)
+                PublicationData = PublicationForm(request.POST,instance=instance)
+                if PublicationData.is_valid():
+                    PublicationData.save()
+                    messages.success(request,'{} updated successfully'.format(PublicationData.cleaned_data['Publication_Title']))
+                    return HttpResponseRedirect('publications')
+                else:
+                    pass
+            container=loginPerson(request)
+            form = PublicationForm(initial = {
+                'Publication_Title':PublicationTable.objects.get(id=pk).Publication_Title,
+                'Volume':PublicationTable.objects.get(id=pk).Volume,
+                'Publication_Author':PublicationTable.objects.get(id=pk).Publication_Author,
+                'issue':PublicationTable.objects.get(id=pk).issue,
+                'Publisher_name':PublicationTable.objects.get(id=pk).Publisher_name,
+                'Website_Id':PublicationTable.objects.get(id=pk).Website_Id,
+                'Journal':PublicationTable.objects.get(id=pk).Journal,
+                'Date':PublicationTable.objects.get(id=pk).Date,
+                'status':PublicationTable.objects.get(id=pk).status,
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editpublications.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('publications') 
+    else:
+        return HttpResponseRedirect('/')
+#disable publications
+def disablePublications(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit publications').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                getById=request.POST['getById']
+                if getById:
+                    if PublicationTable.objects.get(id=getById).status=='inactive':
+                        PublicationTable.objects.filter(id=getById).update(status='active')
+                        messages.success(request,'{} activated'.format(PublicationTable.objects.get(id=getById).Publication_Title))
+                        return HttpResponseRedirect('publications')
+                    else:
+                        messages.warning(request,'{} inactivated'.format(PublicationTable.objects.get(id=getById).Publication_Title))
+                        PublicationTable.objects.filter(id=getById).update(status='inactive')
+                        return HttpResponseRedirect('publications')
+            return HttpResponseRedirect('publications')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('publications') 
+    else:
+        return HttpResponseRedirect('/')
+#view publications
+def viewPublications(request,pk):
+    container=loginPerson(request)
+    container['publication']=PublicationTable.objects.get(id=pk)
+    return render(request,'viewpublications.html',container)
+
+#__journals__
+def journals(request):
+    container = loginPerson(request)
+    container['journals'] = JournalsTable.objects.all()
+    container['dep'] = department.objects.all()
+    if request.method=="POST":
+        filterByTitle =request.POST['filterByTitle']
+        filterByPublisher =request.POST['filterByPublisher']
+        FilterByDep =request.POST['FilterByDep']
+        if filterByTitle:
+            container['journals'] = JournalsTable.objects.filter(Q(Journal_name__icontains=filterByTitle))
+        if filterByPublisher:
+            container['journals'] = JournalsTable.objects.filter(Q(Publisher_name__icontains=filterByPublisher))
+        if FilterByDep:
+            container['journals'] = JournalsTable.objects.filter(Q(Journal_department__id=FilterByDep))
+    return render(request,'journals.html',container)
+#add journals
+def addJournals(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'add journals').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                JournalData=JournalsForm(request.POST)
+                if JournalData.is_valid():
+                    JournalData.save()
+                    messages.success(request,'{} added succesfully'.format(JournalData.cleaned_data['Journal_name']))
+                    return HttpResponseRedirect('journals')
+                else:
+                    pass
+            container=loginPerson(request)
+            container['form']=JournalsForm()
+            return render (request,'addjournals.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('journals') 
+    else:
+        return HttpResponseRedirect('/')
+#disable journals
+def disableJournals(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'disable journals').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                getById=request.POST['getById']
+                if getById:
+                    if JournalsTable.objects.get(id=getById).status=='inactive':
+                        JournalsTable.objects.filter(id=getById).update(status='active')
+                        messages.success(request,'{} activated'.format(JournalsTable.objects.get(id=getById).Journal_name))
+                        return HttpResponseRedirect('journals')
+                    else:
+                        messages.warning(request,'{} inactivated'.format(JournalsTable.objects.get(id=getById).Journal_name))
+                        JournalsTable.objects.filter(id=getById).update(status='inactive')
+                        return HttpResponseRedirect('journals')
+            return HttpResponseRedirect('journals')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('journals') 
+    else:
+        return HttpResponseRedirect('/')
+#view journals
+def viewJournal(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'view journals').PermissionStatus()
+        if Permission:
+            container=loginPerson(request)
+            container['journal'] = JournalsTable.objects.get(id=pk)
+            return render(request,'viewjournals.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('journals') 
+    else:
+        return HttpResponseRedirect('/')
+#edit journals
+def editJournals(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit journals').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                instance = JournalsTable.objects.get(id=pk)
+                JournalData = JournalsForm(request.POST,instance=instance)
+                if JournalData.is_valid():
+                    JournalData.save()
+                    messages.success(request,'{} successfully updated'.format(JournalData.cleaned_data['Journal_name']))
+                    return HttpResponseRedirect('journals')
+            container=loginPerson(request)
+            form = JournalsForm(initial = {
+                'Journal_name':JournalsTable.objects.get(id=pk).Journal_name,
+                'Edition':JournalsTable.objects.get(id=pk).Edition,
+                'Journal_department':JournalsTable.objects.get(id=pk).Journal_department.all(),
+                'Published_Date':JournalsTable.objects.get(id=pk).Published_Date,
+                'Publisher_name':JournalsTable.objects.get(id=pk).Publisher_name,
+                'Journal_Type':JournalsTable.objects.get(id=pk).Journal_Type,
+                'Short_Summary':JournalsTable.objects.get(id=pk).Short_Summary,
+                'status':JournalsTable.objects.get(id=pk).status,
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editjournal.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('journals') 
+    else:
+        return HttpResponseRedirect('/')
+
+#__forms__
+def form(request):
+    container=loginPerson(request)
+    container['forms'] = FormTable.objects.all()
+    if request.method=="POST":
+        filterByTitle=request.POST['filterByTitle']
+        if filterByTitle:
+            container['forms'] = FormTable.objects.filter(Q(Form_name__icontains=filterByTitle))
+    return render(request,"forms.html",container)
+#add form
+def addForm(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'add form').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                formData = formMasterForm(request.POST, request.FILES)
+                print('check')
+                if formData.is_valid():
+                    print('valid')
+                    formData.save()
+                    messages.success(request,'{} successfully added'.format(formData.cleaned_data['Form_name']))
+                    return HttpResponseRedirect('form')
+            container=loginPerson(request)
+            container['form'] = formMasterForm()
+            return render(request,'addforms.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('form') 
+    else:
+        return HttpResponseRedirect('/')    
+#disable form
+def disableForms(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'disable form').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                getById=request.POST['getById']
+                if getById:
+                    if FormTable.objects.get(id=getById).status=='inactive':
+                        FormTable.objects.filter(id=getById).update(status='active')
+                        messages.success(request,'{} activated'.format(FormTable.objects.get(id=getById).Form_name))
+                        return HttpResponseRedirect('form')
+                    else:
+                        messages.warning(request,'{} inactivated'.format(FormTable.objects.get(id=getById).Form_name))
+                        FormTable.objects.filter(id=getById).update(status='inactive')
+                        return HttpResponseRedirect('form')
+            return HttpResponseRedirect('form')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('form') 
+    else:
+        return HttpResponseRedirect('/') 
+#edit form
+def editForm(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit form').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                print('im here')
+                instance = FormTable.objects.get(id=pk)
+                formData = formMasterForm(request.POST,instance=instance)
+                if formData.is_valid():
+                    formData.save()
+                    messages.success(request,'{} successfully updated'.format(formData.cleaned_data['Form_name']))
+                    return HttpResponseRedirect('form')
+                else:
+                    pass
+            container=loginPerson(request)
+            container['userid']=pk
+            form=formMasterForm(initial={
+                'Form_name' : FormTable.objects.get(id=pk).Form_name,
+                'Form' : FormTable.objects.get(id=pk).Form,
+                'status' : FormTable.objects.get(id=pk).status
+            })
+            print(form)
+            container['form']=form
+            return render(request,'editform.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('form') 
+    else:
+        return HttpResponseRedirect('/') 
+#view form
+def viewForm(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit form').PermissionStatus()
+        if Permission:
+            container = loginPerson(request)
+            container['form'] = FormTable.objects.get(id=pk)
+            return render(request,'viewform.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('form') 
+    else:
+        return HttpResponseRedirect('/') 
+# def filterForm(request):
+#     if request.method == "GET":
+#         FilterByName=request.GET['filterByName']
+#         print(FilterByName)
+#         data = FormTable.objects.filter(Q(Form_name__icontains=FilterByName))
+#         print(data)
+#         data1 = serializers.serialize('json', list(data), fields=('Form_name','Form'))
+#         response={'data':data1}
+#         return JsonResponse(response)

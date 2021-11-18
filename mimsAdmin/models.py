@@ -1,4 +1,5 @@
 from django.db import models
+import os
 
 # Create your models here.
 
@@ -206,4 +207,85 @@ class BooksTable(models.Model):
         db_table = 'BooksTable'
         unique_together = [['Books_Name','Auther_Name','Books_Edition']]
 
+class tableHeads(models.Model):
+    heads = models.CharField(max_length=100)
+    class Meta:
+        db_table="tableHeads"
+    def __str__(self):
+        return self.heads
 
+class LogMasterTable(models.Model):
+    choices = (
+        ('active','Activate'),
+        ('inactive','Inactivate')
+    )
+    Name = models.CharField(max_length=100)
+    status = models.CharField(max_length=100,choices=choices,default='active')
+    TableHeads = models.ManyToManyField(
+        tableHeads,  
+        verbose_name="Table Heads",
+    )
+    class Meta:
+        db_table = "LogMasterTable"
+
+class PublicationTable(models.Model):
+    Publication_Title = models.CharField(max_length=100)
+    Volume = models.IntegerField()
+    Publication_Author = models.CharField(max_length=100)
+    issue = models.CharField(max_length=100)
+    Publisher_name =models.CharField(max_length=100)
+    Website_Id = models.CharField(max_length=100)
+    Journal = models.CharField(max_length=100)
+    Date = models.DateField(auto_now_add=False,auto_now=False)
+    choices = (
+        ('active','Activate'),
+        ('inactive','Inactivate')
+    )
+    status = models.CharField(max_length=100,default='active',choices=choices)
+    class Meta:
+        db_table = 'PublicationTable'
+        unique_together = ['Publication_Title','Volume','Publication_Author']
+    def __str__(self):
+        return self.Publication_Title
+
+class JournalsTable(models.Model):
+    Journal_name=models.CharField(max_length=100)
+    Edition = models.CharField(max_length=100)
+    Journal_department = models.ManyToManyField(
+        department,  
+        verbose_name="Department",
+    )
+    Published_Date = models.DateField()
+    Publisher_name = models.CharField(max_length=100)
+    choices=(
+        ('National','National'),
+        ('International','International')
+    )
+    Journal_Type = models.CharField(max_length=100,choices=choices)
+    Short_Summary = models.TextField()
+    status = models.CharField(
+        max_length=100,
+        choices=(
+            ('active','Activate'),
+            ('inactive','Inactivate')
+        )
+    )
+    class Meta:
+        db_table="Journals"
+        unique_together = ['Journal_name','Edition','Published_Date']
+
+class FormTable(models.Model):
+    Form_name = models.CharField(max_length=100)
+    Form = models.FileField(upload_to='Documents/form')
+    status = models.CharField(
+        max_length=100,
+        choices=(
+            ('active','Activate'),
+            ('inactive','Inactivate')
+        ),
+        default='active'
+    )
+    class Meta:
+        db_table='form'
+    def filename(self):
+        return os.path.basename(self.Form.name)

@@ -1,0 +1,80 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800 text-uppercase">{{logMaster.Books_Name}}</h1>
+    <p class="mb-4">
+        <a target="_blank" href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a target="_blank" href="{% url 'logMaster' %}">Log Master</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>View</strong>
+        <a target="_blank" href="{% url 'logMaster' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">LOG DETAILS</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 ">
+                                        Name
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{logMaster.Name}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Table Heads
+                                        <i class="fas fa-hourglass-end"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">
+                                        <ol>
+                                            {% for Heads in logMaster.TableHeads.all %}
+                                            <li>{{Heads}}</li>
+                                            {% endfor %}
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        status
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{logMaster.status}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

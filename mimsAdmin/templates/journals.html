@@ -1,0 +1,180 @@
+{% extends 'Main.html' %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">LOURNALS</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'journals' %}">Journals</a>
+        <strong>+</strong>
+        <a href="{% url 'addJournals' %}">Add Journals</a>
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Journals  <a href="{% url 'addJournals' %}" class="btn btn-primary" style="margin-left: 75%;">
+                Add Journals
+            </a></h6>
+        </div>
+        {% include 'messages.html' %}
+        <div class="card-body">
+            <form class="user" action="{% url 'journals' %}" method="post">{% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-4 mb-3 mb-sm-0">
+                        <input type="text" class="form-control form-control" id="name" placeholder="Title"
+                            name="filterByTitle">
+                    </div>
+                    <div class="col-sm-4 mb-3 mb-sm-0">
+                        <input type="text" class="form-control form-control" id="name" placeholder="Publisher"
+                            name="filterByPublisher">
+                    </div>
+                    <div class="col-sm-4">
+                        <select name="FilterByDep" id="department" class="form-control">
+                            <option value="">--SELECT--</option>
+                            {% for departments in dep %}
+                            <option value="{{departments.id}}"> {{ departments }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="submit" id="form-submit" class="btn btn-primary"
+                            style="width: 100%;">Filter</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="reset" id="clr" class="btn btn-primary" style="width: 100%;">Clear</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                    <thead>
+                        <tr>
+                            <th>SI NO</th>
+                            <th>JOURNAL NAME</th>
+                            <th>EDITION</th>
+                            <th>PUBLISHER</th>
+                            <th>DEPARTMENT</th>
+                            <th>PUBLISHED DATE</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    {% for journal in journals %}
+                    <tbody>
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{journal.Journal_name}}</td>
+                            <td>{{journal.Edition}}</td>
+                            <td>{{journal.Publisher_name}}</td>
+                            <td>
+                                {% for department in journal.Journal_department.all %}
+                                <li>{{ department }}</li>                          
+                                {% endfor %}
+                            </td>
+                            <td>{{journal.Published_Date}}</td>
+                            <td>
+                                <a href="{% url 'viewJournal' journal.id %}" onclick="">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'editJournals' journal.id %}" onclick="">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% if journal.status != 'active' %}
+                                <a class="acti" data-toggle="modal" data-target="#Activate"
+                                    data-name="{{journal.Journal_name}}" data-description="{{journal.id}}">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% else %}
+                                <a class="inacti" data-toggle="modal" data-target="#Inactivate"
+                                    data-name="{{journal.Journal_name}}" data-description="{{journal.id}}">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Activate" tabindex="" role="dialog"
+aria-labelledby="exampleModalLabel">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form action="{% url 'disableJournals' %}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                <button class="close" type="button" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Confirm to Activate <span id="orgName"></span></p>
+                <input type="hidden" name="getById" id="orgId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button"
+                    data-dismiss="modal">Cancel</button>
+                <input class="btn btn-primary" type="submit" name="" id=""
+                    value="Activate">
+
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="Inactivate" tabindex="" role="dialog"
+aria-labelledby="exampleModalLabel">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form action="{% url 'disableJournals' %}" method="post">{% csrf_token %}
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                <button class="close" type="button" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Confirm to Inactivate <span id="orgName1"></span></p>
+                <input type="hidden" name="getById" id="orgId1">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button"
+                    data-dismiss="modal">Cancel</button>
+                <input class="btn btn-primary" type="submit" name="" id=""
+                    value="Inactivate">
+
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $('.acti').click(function () {
+        $('#orgName').html($(this).data('name'));
+        $('#orgId').val($(this).data('description'));
+    });
+</script>
+<script>
+    $('.inacti').click(function () {
+        $('#orgName1').html($(this).data('name'));
+        $('#orgId1').val($(this).data('description'));
+    });
+</script>
+
+
+
+{% endblock content %}

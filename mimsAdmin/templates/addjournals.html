@@ -1,0 +1,86 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">ADD JOURNALS</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'journals' %}">Journals</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'addfaculty' %}"></a> -->
+        <strong>Add Journals</strong>
+        <a href="{% url 'journals' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">ADD JOURNALS</h6>
+        </div>
+        <div class="card-body">
+            <form class="user" action="{% url 'addJournals' %}" method="post">{% csrf_token %}
+                <div class="row">
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Journal_name.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Journal_name}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Edition.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Edition}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Published_Date.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Published_Date}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Publisher_name.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Publisher_name}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.status.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.status}}
+                        </div>
+                    </div>
+                    <div class="form-group col">
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Journal_Type.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Journal_Type}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Journal_department.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Journal_department}}
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="fac_name" style="margin-top: 10px;">{{form.Short_Summary.label}}</label>
+                            <span style="color:red"> *</span>
+                            {{form.Short_Summary}}
+                        </div>
+      
+                        
+                    </div>
+                </div>
+                <hr>
+                <div class="form-group row">
+                    <div class="col-sm-6">
+                        <a href="{% url 'journals' %}" class="btn btn-outline-primary btn-block">
+                            Cancel
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <button type="submit" id="form-submit" class="btn btn-primary" style="width: 100%;">Add
+                            Log Master</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
