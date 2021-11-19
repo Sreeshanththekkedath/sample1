@@ -106,6 +106,13 @@ urlpatterns = [
     path('editForm<str:pk>', viewsRole.editForm,name='editForm'),
     path('viewForm<str:pk>', viewsRole.viewForm,name='viewForm'),
     # path('filterForm', viewsRole.filterForm,name='filterForm'),
+    path('notifications', viewsRole.notifications,name='notifications'),
+    path('addNotifications', viewsRole.addNotifications,name='addNotifications'),
+    path('disableNotification', viewsRole.disableNotification,name='disableNotification'),
+    path('editNotifications<str:pk>', viewsRole.editNotifications,name='editNotifications'),
+    path('viewNotifications<str:pk>', viewsRole.viewNotifications,name='viewNotifications'),
+    path('batch', viewsRole.MyBatch.as_view(),name='batch'),
+    path('addbatch', viewsRole.AddBatch.as_view(),name='addbatch'),
 
 ]
 

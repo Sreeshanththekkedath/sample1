@@ -289,3 +289,36 @@ class FormTable(models.Model):
         db_table='form'
     def filename(self):
         return os.path.basename(self.Form.name)
+
+class NotificationTable(models.Model):
+    Notification_Title = models.CharField(max_length=100)
+    Department = models.ManyToManyField(department,verbose_name="Departments")
+    Added_By = models.ForeignKey(UserTable,on_delete=models.CASCADE)
+    Details = models.TextField()
+    Date = models.DateField()
+    status = models.CharField(
+        max_length=100,
+        choices=(
+            ('active','Activate'),
+            ('inactive','Inactivate')
+        ),
+        default='active'
+    )
+    class Meta:
+        db_table='Notifications'
+
+class BatchTable(models.Model):
+    Batch_Name = models.CharField(max_length=100)
+    Department = models.ForeignKey(department,on_delete=models.CASCADE)
+    From_Date = models.DateField()
+    Date_To = models.DateField()
+    Batch_Status = models.CharField(
+        max_length=100,
+        choices=(
+            ('active','Activate'),
+            ('inactive','Inactivate')
+        ),
+        default='active',
+    )
+    class Meta:
+        db_table = 'Batch'

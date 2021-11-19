@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from django.contrib import messages
@@ -10,7 +10,9 @@ from .forms import *
 from django.shortcuts import redirect
 from .views import hasPermission
 from django.core import serializers
-
+from django.core.paginator import Paginator
+from django.views import View
+from django.views.generic.base import TemplateView
 
 
 
@@ -1011,3 +1013,141 @@ def viewForm(request,pk):
 #         data1 = serializers.serialize('json', list(data), fields=('Form_name','Form'))
 #         response={'data':data1}
 #         return JsonResponse(response)
+
+
+#__Notifications__
+def notifications(request):
+    container=loginPerson(request)
+    container['dep'] = department.objects.all()
+    p=Paginator(NotificationTable.objects.all(),1)
+    page = request.GET.get('page')
+    test = p.get_page(page)
+    container['notifications'] = p.get_page(page)
+    return render(request,'notifications.html',container)
+#add notifications
+def addNotifications(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'add notifications').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                NotificationData = NotificationForm(request.POST)
+                if NotificationData.is_valid():
+                    NotificationData.save()
+                    messages.success(request,'{} added successfully'.format(NotificationData.cleaned_data['Notification_Title']))
+                    return HttpResponseRedirect('notifications')
+                else:
+                    pass
+            container = loginPerson(request)
+            instance = UserTable.objects.get(id=request.session['loginid'])
+            container['form'] = NotificationForm(
+                initial={
+                    'Added_By' : instance
+                }
+            )
+            return render(request,'addnotifications.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('notifications') 
+    else:
+        return HttpResponseRedirect('/') 
+#edit notification
+def editNotifications(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'edit notification').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                instance=NotificationTable.objects.get(id=pk)
+                NotificationData = NotificationForm(request.POST,instance=instance)
+                if NotificationData.is_valid():
+                    NotificationData.save()
+                    messages.success(request,'{} is successfully Updated'.format(NotificationData.cleaned_data['Notification_Title']))
+                    return HttpResponseRedirect('notifications')
+                else:
+                    pass
+            container=loginPerson(request)
+            form = NotificationForm(initial={
+                'Notification_Title' : NotificationTable.objects.get(id=pk).Notification_Title,
+                'Department' : NotificationTable.objects.get(id=pk).Department.all(),
+                'Added_By' :NotificationTable.objects.get(id=pk).Added_By,
+                'Details' : NotificationTable.objects.get(id=pk).Details,
+                'Date' : NotificationTable.objects.get(id=pk).Date,
+                'status' : NotificationTable.objects.get(id=pk).status
+            })
+            container['form'] = form
+            container['userid'] = pk
+            return render(request,'editnotification.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('notifications') 
+    else:
+        return HttpResponseRedirect('/') 
+#view notification
+def viewNotifications(request,pk):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'view notification').PermissionStatus()
+        if Permission:
+            container = loginPerson(request)
+            container['notification'] = NotificationTable.objects.get(id=pk)
+            return render(request,'viewnotification.html',container)
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('notifications') 
+    else:
+        return HttpResponseRedirect('/') 
+#disable notification   
+def disableNotification(request):
+    if 'loginid' in request.session:
+        Permission = hasPermission(request,'view notification').PermissionStatus()
+        if Permission:
+            if request.method=="POST":
+                getById=request.POST['getById']
+                if getById:
+                    if NotificationTable.objects.get(id=getById).status=='inactive':
+                        NotificationTable.objects.filter(id=getById).update(status='active')
+                        messages.success(request,'{} activated'.format(NotificationTable.objects.get(id=getById).Notification_Title))
+                        return HttpResponseRedirect('notifications')
+                    else:
+                        messages.warning(request,'{} inactivated'.format(NotificationTable.objects.get(id=getById).Notification_Title))
+                        NotificationTable.objects.filter(id=getById).update(status='inactive')
+                        return HttpResponseRedirect('notifications')
+            return HttpResponseRedirect('notifications')
+        else:
+            messages.warning(request, "You are not allowed to access")
+            return HttpResponseRedirect('notifications') 
+    else:
+        return HttpResponseRedirect('/') 
+
+#__batch__
+class MyBatch(View):
+    # template_name = "batch.html"
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['LogPerson'] = UserTable.objects.get(id=self.request.session['loginid'])
+    #     return context
+    def get(self, request, *args, **kwargs):
+        container = loginPerson(request)
+        container['batchBank'] = BatchTable.objects.all()
+        return render(request,'batch.html',container)
+    def post(self, request, *args, **kwargs):
+        return render(request,'batch.html',container)
+#add batch
+class AddBatch(View):
+    def get(self, request, *args, **kwargs):
+        if 'loginid' in request.session:
+            if hasPermission(request,'add batch').PermissionStatus():
+                container = loginPerson(request)
+                container['form'] = BatchForm()
+                return render(request,'addbatch.html',container)
+            else:
+                messages.warning(request,'you are not allowed to access')
+                return HttpResponseRedirect('batch')
+        else:
+            return HttpResponseRedirect('/')
+    def post(self, request, *args, **kwargs):
+            BatchFormData = BatchForm(request.POST)
+            if BatchFormData.is_valid():
+                BatchFormData.save()
+                messages.success(request,'{} is added'.format(BatchFormData.cleaned_data['Batch_Name']))
+            return HttpResponseRedirect('batch')
+
+        

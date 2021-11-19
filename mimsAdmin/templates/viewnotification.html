@@ -1,0 +1,124 @@
+{% extends 'Main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800 text-uppercase">{{notification.Notification_Title}}</h1>
+    <p class="mb-4">
+        <a href="{% url 'index' %}">Home</a>
+        <strong>/</strong>
+        <a href="{% url 'notifications' %}">Notifications</a>
+        <strong>/</strong>
+        <!-- <a target="_blank" href="{% url 'add_department' %}">Add Department</a> -->
+        <strong>View</strong>
+        <a href="{% url 'notifications' %}"><i class="fas fa-angle-double-left"></i>Back</a>
+    </p>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">NOTIFICATION DETAILS</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 ">
+                                        Title
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{notification.Notification_Title}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Department
+                                        <i class="fas fa-hourglass-end"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">
+                                    {% for department in notification.Department.all %}
+                                        <li>{{department}}</li>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Added_By
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{notification.Added_By}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Details
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{notification.Details}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Date
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{notification.Date}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        status
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800 text-uppercase">{{notification.status}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

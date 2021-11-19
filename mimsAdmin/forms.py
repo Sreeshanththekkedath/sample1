@@ -130,3 +130,34 @@ class formMasterForm(ModelForm):
     class Meta:
         model = FormTable
         fields = ("__all__")
+
+class NotificationForm(ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+        super(NotificationForm,self).__init__(*args, **kwargs)
+        self.fields["Date"].widget = DateInput()
+        for name in self.fields.keys():
+            self.fields[name].widget.attrs.update({
+                'class':'form-control',
+            })
+        
+    class Meta:
+        model = NotificationTable
+        fields = ("__all__") 
+        widgets = {
+            'Details': Textarea(attrs={'cols': 5, 'rows':4}),
+        }
+
+class BatchForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(BatchForm,self).__init__(*args, **kwargs)
+        self.fields['From_Date'].widget = DateInput()
+        self.fields['Date_To'].widget = DateInput()
+        for name in self.fields.keys():
+            self.fields[name].widget.attrs.update({
+                'class':'form-control',
+            })
+
+    class Meta:
+        model = BatchTable
+        fields = ("__all__")
